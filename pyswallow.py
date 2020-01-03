@@ -22,9 +22,10 @@ class Swallow:
 class Swarm:
 
     def __init__(self, obj_function, n_swallows, n_iterations,
-                 lb, ub, w=0.7, c1=2.0, c2=2.0):
+                 lb, ub, constraints=None, w=0.7, c1=2.0, c2=2.0):
 
         self.obj_function = obj_function
+        self.constraints = constraints
 
         self.n_swallows = n_swallows
         self.n_iterations = n_iterations
@@ -90,11 +91,16 @@ class Swarm:
         for swallow in self.population:
             swallow.move()
 
-    @staticmethod
-    def pbest_update(swallow):
-        if swallow.fitness < swallow.pbest_fitness:
-            swallow.pbest_fitness = swallow.fitness
-            swallow.pbest_position = swallow.position
+    def pbest_update(self, swallow):
+        if self.constraints is not None:
+            if self.constraints(swallow.position):
+                if swallow.fitness < swallow.pbest_fitness:
+                    swallow.pbest_fitness = swallow.fitness
+                    swallow.pbest_position = swallow.position
+        else:
+            if swallow.fitness < swallow.pbest_fitness:
+                swallow.pbest_fitness = swallow.fitness
+                swallow.pbest_position = swallow.position
 
     def swarm_pbest_update(self):
         for swallow in self.population:
@@ -102,9 +108,15 @@ class Swarm:
 
     def gbest_update(self):
         for swallow in self.population:
-            if swallow.fitness < self.gbest_fitness:
-                self.gbest_fitness = copy.copy(swallow.fitness)
-                self.gbest_position = copy.copy(swallow.position)
+            if self.constraints is not None:
+                if self.constraints(swallow.position):
+                    if swallow.fitness < self.gbest_fitness:
+                        self.gbest_fitness = copy.copy(swallow.fitness)
+                        self.gbest_position = copy.copy(swallow.position)
+            else:
+                if swallow.fitness < self.gbest_fitness:
+                    self.gbest_fitness = copy.copy(swallow.fitness)
+                    self.gbest_position = copy.copy(swallow.position)
 
     # Optimise
     def termination_check(self):
@@ -139,6 +151,14 @@ if __name__ == '__main__':
     def objective_function(position):
         return np.square(position[0]) + np.square(position[1]) + 1
 
+
+    def applied_constraints(position):
+        if np.logical_or((position[0] >= 0) and (position[1] <= 0),
+                         (position[1] >= 0) and (position[0] <= 0)):
+            return True
+        else:
+            return False
+
     swallows = 30
     iterations = 1000
 
@@ -149,6 +169,7 @@ if __name__ == '__main__':
                   n_swallows=swallows,
                   n_iterations=iterations,
                   lb=lbound,
-                  ub=ubound)
+                  ub=ubound,
+                  constraints=applied_constraints)
 
     swarm.optimise()
