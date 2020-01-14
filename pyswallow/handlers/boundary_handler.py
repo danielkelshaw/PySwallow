@@ -5,7 +5,6 @@ import numpy as np
 class BoundaryHandler(BaseHandler):
 
     def __init__(self, strategy='standard'):
-        super().__init__()
 
         self.strategy = strategy
         self.strategy_dict = self._get_all_strategies()
