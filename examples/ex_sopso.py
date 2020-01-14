@@ -29,4 +29,7 @@ swarm = ps.Swarm(obj_function=objective_function,
                  ub=ubound,
                  constraints=applied_constraints)
 
+# Example of ability to alter BoundaryHandler strategy.
+swarm.bh = ps.handlers.BoundaryHandler(strategy='reflective')
+
 swarm.optimise()

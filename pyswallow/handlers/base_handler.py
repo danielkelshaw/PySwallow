@@ -8,7 +8,7 @@ class BaseHandler:
         return {
             k: v
             for k, v in inspect.getmembers(self, predicate=inspect.isroutine)
-            if not k.startswith(['_', '__'])
+            if not k.startswith(('_', '__'))
         }
 
     @staticmethod

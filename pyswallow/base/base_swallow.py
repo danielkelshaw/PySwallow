@@ -17,5 +17,5 @@ class BaseSwallow(ABC):
         self.pbest_fitness = float('inf')
 
     @abstractmethod
-    def move(self):
+    def move(self, bh):
         raise NotImplementedError('BaseSwallow::move()')
