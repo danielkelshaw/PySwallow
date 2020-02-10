@@ -2,46 +2,51 @@ from .base_handler import BaseHandler
 import numpy as np
 
 
-class VelocityHandler(BaseHandler):
+class StandardVH(BaseHandler):
 
-    def __init__(self, strategy='standard'):
+    def __init__(self):
+        super().__init__()
 
-        self.strategy = strategy
-        self.strategy_dict = self._get_all_strategies()
-
-    def __call__(self, velocity, lb, ub, **kwargs):
-        try:
-            new_velocity = self.strategy_dict[self.strategy](
-                velocity, lb, ub, **kwargs
-            )
-        except KeyError:
-            raise KeyError('Invalid VelocityHandler strategy.')
-        else:
-            return new_velocity
-
-    @staticmethod
-    def standard(velocity, lb, ub, **kwargs):
+    def __call__(self, velocity):
         return velocity
 
-    @staticmethod
-    def clamped(velocity, lb, ub, **kwargs):
-        return np.clip(velocity, lb, ub)
 
-    def invert(self, velocity, lb, ub, **kwargs):
-        ltb, gtb = self._out_of_bounds(kwargs['position'], lb, ub)
+class ClampedVH(BaseHandler):
 
-        if 'z' not in kwargs:
-            z = 0.5
-        else:
-            z = kwargs['z']
+    def __init__(self, lb, ub):
+        super().__init__()
+        self.lb = lb
+        self.ub = ub
+
+    def __call__(self, velocity):
+        return np.clip(velocity, self.lb, self.ub)
+
+
+class InvertVH(BaseHandler):
+
+    def __init__(self, lb, ub):
+        super().__init__()
+        self.lb = lb
+        self.ub = ub
+
+    def __call__(self, velocity, z=0.5):
+        ltb, gtb = self._out_of_bounds(velocity, self.lb, self.ub)
 
         velocity[ltb] = (-z) * velocity[ltb]
         velocity[gtb] = (-z) * velocity[gtb]
 
         return velocity
 
-    def zero(self, velocity, lb, ub, **kwargs):
-        ltb, gtb = self._out_of_bounds(kwargs['position'], lb, ub)
+
+class ZeroVH(BaseHandler):
+
+    def __init__(self, lb, ub):
+        super().__init__()
+        self.lb = lb
+        self.ub = ub
+
+    def __call__(self, velocity, z=0.5):
+        ltb, gtb = self._out_of_bounds(velocity, self.lb, self.ub)
 
         velocity[np.concatenate((ltb, gtb))] = 0.0
         return velocity

@@ -1,7 +1,7 @@
 from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
-from ..handlers.boundary_handler import BoundaryHandler
-from ..handlers.velocity_handler import VelocityHandler
+from ..handlers.boundary_handler import StandardBH
+from ..handlers.velocity_handler import StandardVH
 
 import numpy as np
 import copy
@@ -14,7 +14,7 @@ class Swallow(BaseSwallow):
 
     def move(self, bh):
         self.position += self.velocity
-        self.position = bh(self.position, self.lb, self.ub)
+        self.position = bh(self.position)
 
 
 class Swarm(BaseSwarm):
@@ -30,8 +30,8 @@ class Swarm(BaseSwarm):
         self.iteration = 0
         self.n_iterations = n_iterations
 
-        self.bh = BoundaryHandler(strategy='standard')
-        self.vh = VelocityHandler(strategy='standard')
+        self.bh = StandardBH()
+        self.vh = StandardVH()
 
     # Reset Methods
     def reset_environment(self):
@@ -71,7 +71,7 @@ class Swarm(BaseSwarm):
                     * (self.gbest_position - swallow.position))
 
         swallow.velocity = inertial() + cognitive() + social()
-        swallow.velocity = self.vh(swallow.velocity, self.lb, self.ub)
+        swallow.velocity = self.vh(swallow.velocity)
 
     def swarm_update_velocity(self):
         for swallow in self.population:
