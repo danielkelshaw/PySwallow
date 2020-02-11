@@ -2,6 +2,7 @@ from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.velocity_handler import StandardVH
+from ..handlers.inertia_handler import StandardIWH
 
 import numpy as np
 import copy
@@ -32,6 +33,7 @@ class Swarm(BaseSwarm):
 
         self.bh = StandardBH()
         self.vh = StandardVH()
+        self.iwh = StandardIWH(self.w)
 
     # Reset Methods
     def reset_environment(self):
@@ -117,7 +119,10 @@ class Swarm(BaseSwarm):
 
         while self.termination_check():
 
-            print('Iteration {0}: {1}'.format(self.iteration, self.gbest_fitness))
+            print('Iteration {0}: {1}'.format(self.iteration,
+                                              self.gbest_fitness))
+
+            self.w = self.iwh(self.iteration)
 
             self.swarm_evaluate_fitness()
             self.swarm_update_best()
