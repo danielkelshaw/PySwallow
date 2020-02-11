@@ -3,6 +3,7 @@ import numpy as np
 
 import pyswallow.handlers.boundary_handler as psbh
 import pyswallow.handlers.velocity_handler as psvh
+import pyswallow.handlers.inertia_handler as psiwh
 
 
 def objective_function(position):
@@ -32,8 +33,9 @@ swarm = ps.Swarm(obj_function=objective_function,
                  ub=ubound,
                  constraints=applied_constraints)
 
-# Example of ability to alter Boundary Handler / Velocity Handler.
+# Altering Boundary / Velocity / Inertia Weight Handlers
 swarm.bh = psbh.NearestBH(swarm.lb, swarm.ub)
 swarm.vh = psvh.ZeroVH(swarm.lb, swarm.ub)
+swarm.iwh = psiwh.LinearIWH(swarm.w, 0.5, swarm.n_iterations)
 
 swarm.optimise()
