@@ -21,7 +21,7 @@ def applied_constraints(position):
 print('PySwallow: Example SOPSO')
 
 swallows = 30
-iterations = 1000
+iterations = 100
 
 lbound = [-50, -50]
 ubound = [50, 50]
@@ -31,7 +31,8 @@ swarm = ps.Swarm(obj_function=objective_function,
                  n_iterations=iterations,
                  lb=lbound,
                  ub=ubound,
-                 constraints=applied_constraints)
+                 constraints=applied_constraints,
+                 debug=True)
 
 # Altering Boundary / Velocity / Inertia Weight Handlers
 swarm.bh = psbh.NearestBH(swarm.lb, swarm.ub)
