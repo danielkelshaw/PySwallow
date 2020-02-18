@@ -1,10 +1,12 @@
 from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
+from ..utils.reporter import Reporter
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.velocity_handler import StandardVH
 from ..handlers.inertia_handler import StandardIWH
 
 import numpy as np
+import logging
 import copy
 
 
@@ -20,10 +22,13 @@ class Swallow(BaseSwallow):
 
 class Swarm(BaseSwarm):
 
-    def __init__(self, obj_function, n_swallows, n_iterations,
-                 lb, ub, constraints=None, w=0.7, c1=2.0, c2=2.0):
+    def __init__(self, obj_function, n_swallows, n_iterations, lb, ub,
+                 constraints=None, w=0.7, c1=2.0, c2=2.0, debug=False):
 
         super().__init__(n_swallows, lb, ub, w, c1, c2)
+
+        log_debug = logging.DEBUG if debug else logging.INFO
+        self.rep = Reporter(lvl=log_debug)
 
         self.obj_function = obj_function
         self.constraints = constraints
@@ -35,6 +40,8 @@ class Swarm(BaseSwarm):
         self.vh = StandardVH()
         self.iwh = StandardIWH(self.w)
 
+        self.rep.log('Swarm initialised successfully')
+
     # Reset Methods
     def reset_environment(self):
         self.iteration = 0
@@ -42,14 +49,17 @@ class Swarm(BaseSwarm):
                                                 size=self.lb.shape[0])
         self.gbest_fitness = float('inf')
         self.reset_populations()
+        self.rep.log('Environment reset', lvl=logging.DEBUG)
 
     def reset_populations(self):
         self.population = []
+        self.rep.log('Populations reset', lvl=logging.DEBUG)
 
     # Initialisation
     def initialise_swarm(self):
         self.population = [Swallow(self.lb, self.ub)
                            for _ in range(self.n_swallows)]
+        self.rep.log('Population initialised', lvl=logging.DEBUG)
 
     # Update Methods
     def evaluate_fitness(self, swallow):
@@ -129,5 +139,14 @@ class Swarm(BaseSwarm):
 
             self.swarm_update_velocity()
             self.swarm_move()
+
+            self.rep.log(
+                'Iteration {}\t'
+                'GBest Fitness = {:.3f}\t'
+                'GBest Position = {}'
+                ''.format(self.iteration,
+                          self.gbest_fitness,
+                          self.gbest_position)
+            )
 
             self.iteration += 1
