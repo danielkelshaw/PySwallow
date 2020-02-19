@@ -15,9 +15,6 @@ class BaseSwarm(ABC):
         self.c1 = c1
         self.c2 = c2
 
-        self.gbest_position = np.random.uniform(self.lb, self.ub)
-        self.gbest_fitness = float('inf')
-
         self.population = []
 
     @abstractmethod
@@ -39,24 +36,3 @@ class BaseSwarm(ABC):
     @abstractmethod
     def evaluate_fitness(self, swallow):
         raise NotImplementedError('BaseSwarm::evaluate_fitness()')
-
-    @abstractmethod
-    def pbest_update(self, swallow):
-        raise NotImplementedError('BaseSwarm::pbest_update()')
-
-    @abstractmethod
-    def gbest_update(self, swallow):
-        raise NotImplementedError('BaseSwarm::gbest_update()')
-
-    def swarm_update_velocity(self):
-        for swallow in self.population:
-            self.update_velocity(swallow)
-
-    def swarm_evaluate_fitness(self):
-        for swallow in self.population:
-            self.evaluate_fitness(swallow)
-
-    def swarm_update_best(self):
-        for swallow in self.population:
-            self.pbest_update(swallow)
-            self.gbest_update(swallow)
