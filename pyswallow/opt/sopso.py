@@ -27,6 +27,9 @@ class Swarm(BaseSwarm):
 
         super().__init__(n_swallows, lb, ub, w, c1, c2)
 
+        self.gbest_position = np.random.uniform(self.lb, self.ub)
+        self.gbest_fitness = float('inf')
+
         log_debug = logging.DEBUG if debug else logging.INFO
         self.rep = Reporter(lvl=log_debug)
 
@@ -114,6 +117,11 @@ class Swarm(BaseSwarm):
             if swallow.fitness < self.gbest_fitness:
                 self.gbest_fitness = copy.deepcopy(swallow.fitness)
                 self.gbest_position = copy.deepcopy(swallow.position)
+
+    def swarm_update_best(self):
+        for swallow in self.population:
+            self.pbest_update(swallow)
+            self.gbest_update(swallow)
 
     # Optimise
     def termination_check(self):
