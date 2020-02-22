@@ -158,3 +158,8 @@ class Swarm(BaseSwarm):
             )
 
             self.iteration += 1
+
+        self.rep.log('Optimisation complete...')
+        self.rep.log('GBest Fitness = {:.3f}\t'
+                     'GBest Position = {}'.format(self.gbest_fitness,
+                                                  self.gbest_position))
