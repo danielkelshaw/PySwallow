@@ -1,10 +1,12 @@
 from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
+from ..utils.reporter import Reporter
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.velocity_handler import StandardVH
 from ..handlers.inertia_handler import StandardIWH
 
 import numpy as np
+import logging
 import copy
 
 
@@ -51,9 +53,12 @@ class MOSwallow(BaseSwallow):
 class MOSwarm(BaseSwarm):
 
     def __init__(self, obj_functions, n_swallows, n_iterations, lb, ub,
-                 constraints=None, w=0.7, c1=2.0, c2=2.0):
+                 constraints=None, w=0.7, c1=2.0, c2=2.0, debug=False):
 
         super().__init__(n_swallows, lb, ub, w, c1, c2)
+
+        log_debug = logging.DEBUG if debug else logging.INFO
+        self.rep = Reporter(lvl=log_debug)
 
         self.archive = []
 
@@ -68,19 +73,24 @@ class MOSwarm(BaseSwarm):
         self.vh = StandardVH()
         self.iwh = StandardIWH(self.w)
 
+        self.rep.log('Swarm initialised successfully')
+
     # Reset methods
     def reset_environment(self):
         self.iteration = 0
         self.reset_populations()
+        self.rep.log('Environment reset', lvl=logging.DEBUG)
 
     def reset_populations(self):
         self.population = []
         self.archive = []
+        self.rep.log('Populations reset', lvl=logging.DEBUG)
 
     # Initialisation
     def initialise_swarm(self):
         self.population = [MOSwallow(self.lb, self.ub, self.n_objs)
                            for _ in range(self.n_swallows)]
+        self.rep.log('Population initialised', lvl=logging.DEBUG)
 
     # Update Methods
     def evaluate_fitness(self, swallow):
@@ -104,7 +114,7 @@ class MOSwarm(BaseSwarm):
 
         def social():
             return (self.c2 * np.random.uniform()
-                    * (_leader.gbest_position - swallow.position))
+                    * (_leader.pbest_position - swallow.position))
 
         swallow.velocity = inertial() + cognitive() + social()
         swallow.velocity = self.vh(swallow.velocity)
@@ -178,4 +188,20 @@ class MOSwarm(BaseSwarm):
             self.swarm_update_velocity()
             self.swarm_move()
 
+            self.rep.log(
+                'Iteration {}\t'
+                'Archive Length = {:03}\t'
+                ''.format(self.iteration,
+                          len(self.archive))
+            )
+
             self.iteration += 1
+
+        self.rep.log('Optimisation complete...')
+        self.rep.log('Archive contents:')
+
+        for idx, swallow in enumerate(self.archive):
+            self.rep.log('Swallow {:03}\t'
+                         'Fitness = {}\t'
+                         'Position = {}'
+                         ''.format(idx, swallow.fitness, swallow.position))
