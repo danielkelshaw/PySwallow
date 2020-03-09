@@ -123,8 +123,20 @@ class MOSwarm(BaseSwarm):
         for swallow in self.population:
             self.update_velocity(swallow)
 
-    def choose_leader(self):
-        return copy.deepcopy(np.random.choice(self.archive))
+    def choose_leader(self, method=0):
+
+        if method == 0:
+            return copy.deepcopy(np.random.choice(self.archive))
+
+        #TODO:>> Add functionality for this...
+        if method == 1:
+            if len(self.archive) <= self.n_objs:
+                return copy.deepcopy(np.random.choice(self.archive))
+            else:
+                sparsist_leader = sorted(self.archive,
+                                         key=lambda x: x.sparsity,
+                                         reverse=True)[self.n_objs]
+                return copy.deepcopy(sparsist_leader)
 
     def swarm_move(self):
         for swallow in self.population:
