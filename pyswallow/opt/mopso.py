@@ -19,6 +19,7 @@ class MOSwallow(BaseSwallow):
 
         self.fitness = [None] * n_obj
         self.pbest_fitness = [float('inf')] * n_obj
+        self.sparsity = 0
 
     def move(self, bh):
 
@@ -91,6 +92,9 @@ class MOSwarm(BaseSwarm):
         self.population = [MOSwallow(self.lb, self.ub, self.n_objs)
                            for _ in range(self.n_swallows)]
         self.rep.log('Population initialised', lvl=logging.DEBUG)
+
+    def initialise_archive(self):
+        self.archive = []
 
     # Update Methods
     def evaluate_fitness(self, swallow):
@@ -172,6 +176,27 @@ class MOSwarm(BaseSwarm):
 
         return pf
 
+    @staticmethod
+    def assign_sparsity(population, n_objectives):
+
+        _population = copy.deepcopy(population)
+
+        for swallow in _population:
+            swallow.sparsity = 0
+
+        for obj in range(n_objectives):
+            _population = sorted(_population, key=lambda x: x.fitness[obj])
+            _population[0].sparsity = float('inf')
+            _population[-1].sparsity = float('inf')
+
+            for i in range(1, len(_population) - 1):
+                _sparse = (_population[i - 1].fitness[obj]
+                           - _population[i + 1].fitness[obj])
+
+                _population[i].sparsity += _sparse
+
+        return _population
+
     # Optimise
     def termination_check(self):
         if self.iteration >= self.n_iterations:
@@ -183,6 +208,7 @@ class MOSwarm(BaseSwarm):
 
         self.reset_environment()
         self.initialise_swarm()
+        self.initialise_archive()
 
         while self.termination_check():
 
@@ -196,6 +222,7 @@ class MOSwarm(BaseSwarm):
 
             self.archive.extend(self.population)
             self.archive = self.pareto_front(self.archive)
+            self.archive = self.assign_sparsity(self.archive, self.n_objs)
 
             self.swarm_update_velocity()
             self.swarm_move()
