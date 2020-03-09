@@ -132,7 +132,6 @@ class MOSwarm(BaseSwarm):
         if method == 0:
             return copy.deepcopy(np.random.choice(self.archive))
 
-        #TODO:>> Add functionality for this...
         if method == 1:
             if len(self.archive) <= self.n_objs:
                 return copy.deepcopy(np.random.choice(self.archive))
@@ -148,6 +147,7 @@ class MOSwarm(BaseSwarm):
 
     @staticmethod
     def update_pbest(swallow):
+        # TODO [CONSIDER] >> Should the Swallow class handle this?
         if swallow.self_dominate():
             swallow.pbest_position = swallow.position
             swallow.pbest_fitness = swallow.fitness
@@ -223,6 +223,12 @@ class MOSwarm(BaseSwarm):
             self.archive.extend(self.population)
             self.archive = self.pareto_front(self.archive)
             self.archive = self.assign_sparsity(self.archive, self.n_objs)
+
+            # limit archive size based on sparsity
+            if len(self.archive) > self.n_swallows:
+                self.archive = sorted(self.archive,
+                                      key=lambda x: x.sparsity,
+                                      reverse=True)[:self.n_swallows]
 
             self.swarm_update_velocity()
             self.swarm_move()
