@@ -6,6 +6,7 @@ from ..handlers.velocity_handler import StandardVH
 from ..handlers.inertia_handler import StandardIWH
 
 import numpy as np
+import matplotlib.pyplot as plt
 import logging
 import copy
 
@@ -228,7 +229,7 @@ class MOSwarm(BaseSwarm):
             if len(self.archive) > self.n_swallows:
                 self.archive = sorted(self.archive,
                                       key=lambda x: x.sparsity,
-                                      reverse=True)[:self.n_swallows]
+                                      reverse=False)[:self.n_swallows]
 
             self.swarm_update_velocity()
             self.swarm_move()
@@ -250,3 +251,21 @@ class MOSwarm(BaseSwarm):
                          'Fitness = {}\t'
                          'Position = {}'
                          ''.format(idx, swallow.fitness, swallow.position))
+
+    def plot_archive(self, save=False):
+
+        if self.n_objs == 2:
+
+            f1 = [swallow.fitness[0] for swallow in self.archive]
+            f2 = [swallow.fitness[1] for swallow in self.archive]
+
+            fig = plt.figure(figsize=(16, 10))
+            plt.scatter(f1, f2, s=5)
+
+            if save:
+                plt.savefig('plot.png')
+            else:
+                plt.show()
+
+        else:
+            raise ValueError('Must be 2 objectives...')
