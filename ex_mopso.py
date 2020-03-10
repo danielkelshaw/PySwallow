@@ -32,3 +32,5 @@ swarm = ps.MOSwarm(obj_functions=objectives,
                    debug=False)
 
 swarm.optimise()
+
+swarm.plot_archive()
