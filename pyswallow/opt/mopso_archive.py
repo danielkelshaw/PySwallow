@@ -9,7 +9,6 @@ from ..handlers.archive import Archive
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-import copy
 
 
 class MOSwallow(BaseSwallow):

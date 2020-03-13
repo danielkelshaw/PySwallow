@@ -86,7 +86,7 @@ def rastrigin(position):
 
     return val
 
-¡
+
 def sphere(position):
     val = np.sum(np.square(position))
     return val
