@@ -1,16 +1,8 @@
 import pyswallow as ps
-import numpy as np
+from pyswallow.utils.functions.multi_objective import schaffer_n1
 
 
-def obj_one(position):
-    return np.square(position[0])
-
-
-def obj_two(position):
-    return np.square(position[0] - 2)
-
-
-objectives = [obj_one, obj_two]
+objectives = schaffer_n1()
 
 print('PySwallow: Example MOPSO')
 
