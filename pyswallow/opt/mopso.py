@@ -4,11 +4,11 @@ from ..utils.reporter import Reporter
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.velocity_handler import StandardVH
 from ..handlers.inertia_handler import StandardIWH
+from ..handlers.archive import Archive
 
 import numpy as np
 import matplotlib.pyplot as plt
 import logging
-import copy
 
 
 class MOSwallow(BaseSwallow):
@@ -62,11 +62,11 @@ class MOSwarm(BaseSwarm):
         log_debug = logging.DEBUG if debug else logging.INFO
         self.rep = Reporter(lvl=log_debug)
 
-        self.archive = []
-
         self.obj_functions = obj_functions
         self.n_objs = len(self.obj_functions)
         self.constraints = constraints
+
+        self.archive = Archive(self.n_objs)
 
         self.iteration = 0
         self.n_iterations = n_iterations
@@ -85,7 +85,6 @@ class MOSwarm(BaseSwarm):
 
     def reset_populations(self):
         self.population = []
-        self.archive = []
         self.rep.log('Populations reset', lvl=logging.DEBUG)
 
     # Initialisation
@@ -95,7 +94,7 @@ class MOSwarm(BaseSwarm):
         self.rep.log('Population initialised', lvl=logging.DEBUG)
 
     def initialise_archive(self):
-        self.archive = []
+        self.archive = Archive(self.n_objs)
 
     # Update Methods
     def evaluate_fitness(self, swallow):
@@ -108,7 +107,7 @@ class MOSwarm(BaseSwarm):
 
     def update_velocity(self, swallow):
 
-        _leader = self.choose_leader()
+        _leader = self.archive.choose_leader()
 
         def inertial():
             return self.w * swallow.velocity
@@ -128,20 +127,6 @@ class MOSwarm(BaseSwarm):
         for swallow in self.population:
             self.update_velocity(swallow)
 
-    def choose_leader(self, method=0):
-
-        if method == 0:
-            return copy.deepcopy(np.random.choice(self.archive))
-
-        if method == 1:
-            if len(self.archive) <= self.n_objs:
-                return copy.deepcopy(np.random.choice(self.archive))
-            else:
-                sparsist_leader = sorted(self.archive,
-                                         key=lambda x: x.sparsity,
-                                         reverse=True)[self.n_objs]
-                return copy.deepcopy(sparsist_leader)
-
     def swarm_move(self):
         for swallow in self.population:
             swallow.move(self.bh)
@@ -156,47 +141,6 @@ class MOSwarm(BaseSwarm):
     def swarm_update_pbest(self):
         for swallow in self.population:
             self.update_pbest(swallow)
-
-    # Archive Based Functions
-    @staticmethod
-    def pareto_front(population):
-
-        pf = []
-        _population = copy.deepcopy(population)
-
-        for idx, particle in enumerate(_population):
-
-            pf.append(particle)
-
-            for opp_idx, opp_particle in enumerate(pf[:-1]):
-                if opp_particle.dominate(particle):
-                    del pf[-1]
-                    break
-                elif particle.dominate(opp_particle):
-                    del pf[opp_idx]
-
-        return pf
-
-    @staticmethod
-    def assign_sparsity(population, n_objectives):
-
-        _population = copy.deepcopy(population)
-
-        for swallow in _population:
-            swallow.sparsity = 0
-
-        for obj in range(n_objectives):
-            _population = sorted(_population, key=lambda x: x.fitness[obj])
-            _population[0].sparsity = float('inf')
-            _population[-1].sparsity = float('inf')
-
-            for i in range(1, len(_population) - 1):
-                _sparse = (_population[i - 1].fitness[obj]
-                           - _population[i + 1].fitness[obj])
-
-                _population[i].sparsity += _sparse
-
-        return _population
 
     # Optimise
     def termination_check(self):
@@ -214,22 +158,19 @@ class MOSwarm(BaseSwarm):
         while self.termination_check():
 
             print('Iteration: {0}: Archive Length: {1:05}'
-                  ''.format(self.iteration, len(self.archive)))
+                  ''.format(self.iteration, len(self.archive.population)))
 
             self.w = self.iwh(self.iteration)
 
             self.swarm_evaluate_fitness()
             self.swarm_update_pbest()
 
-            self.archive.extend(self.population)
-            self.archive = self.pareto_front(self.archive)
-            self.archive = self.assign_sparsity(self.archive, self.n_objs)
+            for swallow in self.population:
+                self.archive.add_swallow(swallow)
 
-            # limit archive size based on sparsity
-            if len(self.archive) > self.n_swallows:
-                self.archive = sorted(self.archive,
-                                      key=lambda x: x.sparsity,
-                                      reverse=False)[:self.n_swallows]
+            self.archive.pareto_front()
+            self.archive.assign_sparsity()
+            self.archive.sparsity_limit(n_limit=self.n_swallows)
 
             self.swarm_update_velocity()
             self.swarm_move()
@@ -238,7 +179,7 @@ class MOSwarm(BaseSwarm):
                 'Iteration {}\t'
                 'Archive Length = {:03}\t'
                 ''.format(self.iteration,
-                          len(self.archive))
+                          len(self.archive.population))
             )
 
             self.iteration += 1
@@ -246,7 +187,7 @@ class MOSwarm(BaseSwarm):
         self.rep.log('Optimisation complete...')
         self.rep.log('Archive contents:')
 
-        for idx, swallow in enumerate(self.archive):
+        for idx, swallow in enumerate(self.archive.population):
             self.rep.log('Swallow {:03}\t'
                          'Fitness = {}\t'
                          'Position = {}'
@@ -256,8 +197,8 @@ class MOSwarm(BaseSwarm):
 
         if self.n_objs == 2:
 
-            f1 = [swallow.fitness[0] for swallow in self.archive]
-            f2 = [swallow.fitness[1] for swallow in self.archive]
+            f1 = [swallow.fitness[0] for swallow in self.archive.population]
+            f2 = [swallow.fitness[1] for swallow in self.archive.population]
 
             fig = plt.figure(figsize=(16, 10))
             plt.scatter(f1, f2, s=5)

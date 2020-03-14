@@ -49,6 +49,13 @@ class Archive:
 
         self.population = _population
 
+    def sparsity_limit(self, n_limit):
+
+        if len(self.population) > n_limit:
+            self.population = sorted(self.population,
+                                     key=lambda x: x.sparsity,
+                                     reverse=False)[:n_limit]
+
     def choose_leader(self, method=0):
 
         if method == 0:
