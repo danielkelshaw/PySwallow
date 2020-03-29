@@ -2,7 +2,25 @@ import pytest
 import numpy as np
 
 import pyswallow as ps
+import pyswallow.handlers.boundary_handler as psbh
 from pyswallow.utils.functions.single_objective import sphere
+
+
+class TestSOSwallow:
+
+    @pytest.fixture
+    def swallow(self):
+        lb = np.array([-50, 50])
+        ub = np.array([50, 50])
+        swallow = ps.Swallow(lb, ub)
+        return swallow
+
+    def test_move(self, swallow):
+        swallow.position = np.array([0, 0])
+        swallow.velocity = np.array([5, 5])
+        swallow.move(psbh.StandardBH())
+
+        assert np.array_equal(swallow.position, np.array([5, 5]))
 
 
 class TestSOSwarm:
@@ -48,6 +66,14 @@ class TestSOSwarm:
         assert reset_optimiser.iteration == 0
         assert reset_optimiser.population == []
         assert reset_optimiser.gbest_fitness == float('inf')
+
+    def test_initialise_swarm(self, optimiser):
+        optimiser.population = []
+        optimiser.initialise_swarm()
+
+        assert len(optimiser.population) == optimiser.n_swallows
+        for swallow in optimiser.population:
+            assert isinstance(swallow, ps.Swallow)
 
     def test_eval_fitness(self, optimiser, swallow):
         target_fit = sphere(swallow.position)

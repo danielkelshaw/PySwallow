@@ -85,6 +85,7 @@ class MOSwarm(BaseSwarm):
 
     def reset_populations(self):
         self.population = []
+        self.archive = Archive(self.n_objs)
         self.rep.log('Populations reset', lvl=logging.DEBUG)
 
     # Initialisation
