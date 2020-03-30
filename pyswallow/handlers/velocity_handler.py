@@ -26,6 +26,8 @@ class InvertVH(BaseHandler):
 
     def __init__(self, lb, ub):
         super().__init__()
+
+        # TODO >> Need to make sure np array passed in has type(np.float32)
         self.lb = lb
         self.ub = ub
 
