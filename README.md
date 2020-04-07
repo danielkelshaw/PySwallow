@@ -2,12 +2,33 @@
 
 [![Build Status](https://travis-ci.org/danielkelshaw/PySwallow.svg?branch=master)](https://travis-ci.org/danielkelshaw/PySwallow)
 
-PySwallow is a library of Particle Swarm Optimisation algorithms implemented in Python.
+**PySwallow is a library of Particle Swarm Optimisation algorithms implemented in Python.**
 
-Particle Swarm Optimisation is a stochastic population-based optimisation technique developed by Kennedy and Eberhart in 1995. Mathematically, swarming is the collective decentralised motion of a large number of self-propelled entities as a collective animal behaviour and is exhibited by many living creatures - including birds, i.e. swallows. 
+## Features
 
-A swarm of particles represent a group of potential solutions moving in n-dimensional space, each particle has an associated position and velocity. Particle Swarm Optimisation aims to minimise any given objective function through manouvering these particles such that a global-optimum position/solution is found.
+- [x] High-level module for optimisation.
+- [x] Extensible tools for researchers and developers.
+- [x] Built-in objective functions for testing.
 
-## Development Goals
+*And many more...*
 
-The aim of PySwallow is to develop an extensible research toolkit for Particle Swarm Optimisation - providing researchers/students with the resources required to implement the algorithms in their own work.
+## Usage
+
+```python
+import pyswallow as ps
+from pyswallow.utils.functions.single_objective import sphere
+
+swallows = 30
+iterations = 100
+
+lbound = [-50, -50]
+ubound = [50, 50]
+
+swarm = ps.Swarm(obj_function=sphere,
+                 n_swallows=swallows,
+                 n_iterations=iterations,
+                 lb=lbound,
+                 ub=ubound)
+
+swarm.optimise()
+```
