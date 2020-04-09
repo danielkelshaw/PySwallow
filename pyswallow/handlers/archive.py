@@ -42,8 +42,8 @@ class Archive:
             _population[-1].sparsity = float('inf')
 
             for i in range(1, len(_population) - 1):
-                _sparse = (_population[i - 1].fitness[obj]
-                           - _population[i + 1].fitness[obj])
+                _sparse = (_population[i + 1].fitness[obj]
+                           - _population[i - 1].fitness[obj])
 
                 _population[i].sparsity += _sparse
 
