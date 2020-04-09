@@ -38,7 +38,7 @@ class TestArchive:
             if idx == 0 or idx == 29:
                 assert swallow.sparsity == float('inf')
             else:
-                assert swallow.sparsity == -4
+                assert swallow.sparsity == 4
 
     @pytest.mark.parametrize('n_limit', [15,  30, 45])
     def test_sparsity_limit(self, pop_archive, n_limit):
@@ -57,4 +57,4 @@ class TestArchive:
         assert isinstance(leader, ps.MOSwallow)
 
         if method == 1:
-            assert leader.sparsity == -4
+            assert leader.sparsity == 4
