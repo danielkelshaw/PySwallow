@@ -15,8 +15,8 @@ import copy
 
 class Swallow(BaseSwallow):
 
-    def __init__(self, lb, ub):
-        super().__init__(lb, ub)
+    def __init__(self, bounds):
+        super().__init__(bounds)
 
     def move(self, bh):
         self.position += self.velocity
@@ -25,13 +25,10 @@ class Swallow(BaseSwallow):
 
 class Swarm(BaseSwarm):
 
-    def __init__(self, obj_function, n_swallows, n_iterations, lb, ub,
+    def __init__(self, obj_function, n_swallows, n_iterations, bounds,
                  constraints=None, w=0.7, c1=2.0, c2=2.0, debug=False):
 
-        super().__init__(n_swallows, lb, ub, w, c1, c2)
-
-        # self.gbest_position = np.random.uniform(self.lb, self.ub)
-        # self.gbest_fitness = float('inf')
+        super().__init__(n_swallows, bounds, w, c1, c2)
 
         self.gbest_swallow = None
 
@@ -55,10 +52,6 @@ class Swarm(BaseSwarm):
     # Reset Methods
     def reset_environment(self):
         self.iteration = 0
-        # self.gbest_position = np.random.uniform(self.lb, self.ub,
-        #                                         size=self.lb.shape[0])
-        # self.gbest_fitness = float('inf')
-
         self.gbest_swallow = None
 
         self.reset_populations()
@@ -70,8 +63,7 @@ class Swarm(BaseSwarm):
 
     # Initialisation
     def initialise_swarm(self):
-        self.population = [Swallow(self.lb, self.ub)
-                           for _ in range(self.n_swallows)]
+        self.population = [Swallow(self.bounds) for _ in range(self.n_swallows)]
         self.rep.log('Population initialised', lvl=logging.DEBUG)
 
     # Update Methods

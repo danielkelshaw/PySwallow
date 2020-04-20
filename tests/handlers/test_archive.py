@@ -14,18 +14,27 @@ class TestArchive:
     @pytest.fixture
     def pop_archive(self, archive):
         for i in range(30):
-            lb = np.array([0, 0])
-            ub = np.array([5, 5])
-            swallow = ps.MOSwallow(lb, ub, 2)
+
+            bounds = {
+                'x0': [0.0, 0.0],
+                'x1': [5.0, 5.0]
+            }
+
+            swallow = ps.MOSwallow(bounds, 2)
             swallow.fitness = [i, i]
             archive.add_swallow(swallow)
+
         return archive
 
     @pytest.fixture
     def swallow(self):
-        lb = np.array([-50, -50])
-        ub = np.array([50, 50])
-        return ps.MOSwallow(lb, ub, 2)
+
+        bounds = {
+            'x0': [-50.0, -50.0],
+            'x1': [50.0, 50.0]
+        }
+
+        return ps.MOSwallow(bounds, 2)
 
     def test_add_swallow(self, archive, swallow):
         assert len(archive.population) == 0
@@ -40,7 +49,7 @@ class TestArchive:
             else:
                 assert swallow.sparsity == 4
 
-    @pytest.mark.parametrize('n_limit', [15,  30, 45])
+    @pytest.mark.parametrize('n_limit', [15, 30, 45])
     def test_sparsity_limit(self, pop_archive, n_limit):
         pop_archive.assign_sparsity()
         pop_archive.sparsity_limit(n_limit)

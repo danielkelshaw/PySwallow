@@ -4,12 +4,19 @@ from abc import ABC, abstractmethod
 
 class BaseSwarm(ABC):
 
-    def __init__(self, n_swallows, lb, ub, w, c1, c2):
+    def __init__(self, n_swallows, bounds, w, c1, c2):
 
         self.n_swallows = n_swallows
 
-        self.lb = np.array(lb)
-        self.ub = np.array(ub)
+        if not isinstance(bounds, dict):
+            raise TypeError('bounds must be dict.')
+
+        self.bounds = bounds
+        self.pnames = list(bounds.keys())
+
+        _bounds = np.asarray(list(bounds.values()))
+        self._lb = _bounds[:, 0]
+        self._ub = _bounds[:, 1]
 
         self.w = w
         self.c1 = c1
