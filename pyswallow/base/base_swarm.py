@@ -22,10 +22,6 @@ class BaseSwarm(ABC):
         raise NotImplementedError('BaseSwarm::reset_environment()')
 
     @abstractmethod
-    def termination_check(self):
-        raise NotImplementedError('BaseSwarm::termination_check()')
-
-    @abstractmethod
     def initialise_swarm(self):
         raise NotImplementedError('BaseSwarm::initialise_swarm()')
 

@@ -65,7 +65,6 @@ class TestSOSwarm:
     def test_check_reset(self, reset_optimiser):
         assert reset_optimiser.iteration == 0
         assert reset_optimiser.population == []
-        assert reset_optimiser.gbest_fitness == float('inf')
 
     def test_initialise_swarm(self, optimiser):
         optimiser.population = []
@@ -99,41 +98,8 @@ class TestSOSwarm:
         swallow.position = np.array([5, 5])
         optimiser.gbest_update(swallow)
 
-        assert np.array_equal(optimiser.gbest_fitness, swallow.fitness)
-        assert np.array_equal(optimiser.gbest_position, swallow.position)
-
-    @pytest.mark.parametrize('f', [50, 0, -50])
-    def test_constrained_pbest_update(self, constrained_optimiser, swallow, f):
-        swallow.pbest_fitness = 100
-        swallow.pbest_position = np.array([10, 10])
-        swallow.fitness = f
-        swallow.position = np.array([5, 5])
-        constrained_optimiser.pbest_update(swallow)
-
-        assert not np.array_equal(swallow.pbest_fitness, swallow.fitness)
-        assert not np.array_equal(swallow.pbest_position, swallow.position)
-
-    @pytest.mark.parametrize('f', [50, 0, -50])
-    def test_constrained_gbest_update(self, constrained_optimiser, swallow, f):
-        constrained_optimiser.gbest_fitness = 100
-        constrained_optimiser.gbest_position = np.array([10, 10])
-        swallow.fitness = f
-        swallow.position = np.array([5, 5])
-        constrained_optimiser.gbest_update(swallow)
-
-        assert not np.array_equal(constrained_optimiser.gbest_fitness,
-                                  swallow.fitness)
-
-        assert not np.array_equal(constrained_optimiser.gbest_position,
-                                  swallow.position)
-
-    @pytest.mark.parametrize('iteration', [100, 200])
-    def test_termination_check(self, optimiser, iteration):
-        optimiser.n_iterations = 100
-        optimiser.iteration = 200
-        terminate = optimiser.termination_check()
-
-        assert not terminate
+        assert np.array_equal(optimiser.gbest_swallow.fitness, swallow.fitness)
+        assert np.array_equal(optimiser.gbest_swallow.position, swallow.position)
 
     def test_sphere_opt_result(self, optimiser):
         target_fit = 0.0
@@ -141,5 +107,9 @@ class TestSOSwarm:
 
         optimiser.optimise()
 
-        assert np.allclose(optimiser.gbest_fitness, target_fit, rtol=1e-3)
-        assert np.allclose(optimiser.gbest_position, target_pos, rtol=1e-3)
+        assert np.allclose(optimiser.gbest_swallow.fitness,
+                           target_fit,
+                           rtol=1e-3)
+        assert np.allclose(optimiser.gbest_swallow.position,
+                           target_pos,
+                           rtol=1e-3)
