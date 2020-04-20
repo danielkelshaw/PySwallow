@@ -17,6 +17,7 @@ class TestBoundaryHandler:
     def bounds(self):
         lb = np.array([0, 0])
         ub = np.array([10, 10])
+
         return lb, ub
 
     @pytest.mark.parametrize('pos', [[-5, -5], [5, 5], [15, 15]])

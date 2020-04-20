@@ -13,9 +13,9 @@ import logging
 
 class MOSwallow(BaseSwallow):
 
-    def __init__(self, lb, ub, n_obj):
+    def __init__(self, bounds, n_obj):
 
-        super().__init__(lb, ub)
+        super().__init__(bounds)
         self.n_obj = n_obj
 
         self.fitness = [None] * n_obj
@@ -54,10 +54,10 @@ class MOSwallow(BaseSwallow):
 
 class MOSwarm(BaseSwarm):
 
-    def __init__(self, obj_functions, n_swallows, n_iterations, lb, ub,
+    def __init__(self, obj_functions, n_swallows, n_iterations, bounds,
                  constraints=None, w=0.7, c1=2.0, c2=2.0, debug=False):
 
-        super().__init__(n_swallows, lb, ub, w, c1, c2)
+        super().__init__(n_swallows, bounds, w, c1, c2)
 
         log_debug = logging.DEBUG if debug else logging.INFO
         self.rep = Reporter(lvl=log_debug)
@@ -90,7 +90,7 @@ class MOSwarm(BaseSwarm):
 
     # Initialisation
     def initialise_swarm(self):
-        self.population = [MOSwallow(self.lb, self.ub, self.n_objs)
+        self.population = [MOSwallow(self.bounds, self.n_objs)
                            for _ in range(self.n_swallows)]
         self.rep.log('Population initialised', lvl=logging.DEBUG)
 

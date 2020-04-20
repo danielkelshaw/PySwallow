@@ -10,9 +10,13 @@ class TestSOSwallow:
 
     @pytest.fixture
     def swallow(self):
-        lb = np.array([-50, 50])
-        ub = np.array([50, 50])
-        swallow = ps.Swallow(lb, ub)
+
+        bounds = {
+            'x0': [-50.0, -50.0],
+            'x01': [50.0, 50.0]
+        }
+
+        swallow = ps.Swallow(bounds)
         return swallow
 
     def test_move(self, swallow):
@@ -27,11 +31,16 @@ class TestSOSwarm:
 
     @pytest.fixture
     def optimiser(self):
+
+        bounds = {
+            'x0': [-50.0, -50.0],
+            'x1': [50.0, 50.0]
+        }
+
         opt = ps.Swarm(obj_function=sphere,
                        n_swallows=30,
                        n_iterations=1000,
-                       lb=[-50, 50],
-                       ub=[50, 50],
+                       bounds=bounds,
                        constraints=None,
                        debug=False)
         return opt
@@ -51,9 +60,13 @@ class TestSOSwarm:
 
     @pytest.fixture
     def swallow(self):
-        lb = np.array([-50, 50])
-        ub = np.array([50, 50])
-        swallow = ps.Swallow(lb, ub)
+
+        bounds = {
+            'x0': [-50.0, -50.0],
+            'x01': [50.0, 50.0]
+        }
+
+        swallow = ps.Swallow(bounds)
         return swallow
 
     @pytest.fixture

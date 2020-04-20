@@ -4,13 +4,19 @@ from abc import ABC, abstractmethod
 
 class BaseSwallow(ABC):
 
-    def __init__(self, lb, ub):
+    def __init__(self, bounds):
 
-        self.lb = lb
-        self.ub = ub
+        if not isinstance(bounds, dict):
+            raise TypeError('bounds must be dict.')
 
-        self.position = np.random.uniform(lb, ub, size=lb.shape[0])
-        self.velocity = np.random.uniform(lb, ub, size=lb.shape[0])
+        self._pnames = list(bounds.keys())
+        _bounds = np.asarray(list(bounds.values()))
+
+        self.lb = _bounds[:, 0]
+        self.ub = _bounds[:, 1]
+
+        self.position = np.random.uniform(self.lb, self.ub)
+        self.velocity = np.random.uniform(self.lb, self.ub)
         self.fitness = None
 
         self.pbest_position = self.position
