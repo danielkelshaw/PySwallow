@@ -1,6 +1,9 @@
 from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
+
 from ..utils.reporter import Reporter
+from ..utils.termination_manager import IterationTerminationManager
+
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.velocity_handler import StandardVH
 from ..handlers.inertia_handler import StandardIWH
@@ -27,8 +30,10 @@ class Swarm(BaseSwarm):
 
         super().__init__(n_swallows, lb, ub, w, c1, c2)
 
-        self.gbest_position = np.random.uniform(self.lb, self.ub)
-        self.gbest_fitness = float('inf')
+        # self.gbest_position = np.random.uniform(self.lb, self.ub)
+        # self.gbest_fitness = float('inf')
+
+        self.gbest_swallow = None
 
         log_debug = logging.DEBUG if debug else logging.INFO
         self.rep = Reporter(lvl=log_debug)
@@ -43,14 +48,19 @@ class Swarm(BaseSwarm):
         self.vh = StandardVH()
         self.iwh = StandardIWH(self.w)
 
+        self.termination_manager = IterationTerminationManager(self)
+
         self.rep.log('Swarm initialised successfully')
 
     # Reset Methods
     def reset_environment(self):
         self.iteration = 0
-        self.gbest_position = np.random.uniform(self.lb, self.ub,
-                                                size=self.lb.shape[0])
-        self.gbest_fitness = float('inf')
+        # self.gbest_position = np.random.uniform(self.lb, self.ub,
+        #                                         size=self.lb.shape[0])
+        # self.gbest_fitness = float('inf')
+
+        self.gbest_swallow = None
+
         self.reset_populations()
         self.rep.log('Environment reset', lvl=logging.DEBUG)
 
@@ -83,7 +93,7 @@ class Swarm(BaseSwarm):
 
         def social():
             return (self.c2 * np.random.uniform()
-                    * (self.gbest_position - swallow.position))
+                    * (self.gbest_swallow.position - swallow.position))
 
         swallow.velocity = inertial() + cognitive() + social()
         swallow.velocity = self.vh(swallow.velocity)
@@ -108,37 +118,23 @@ class Swarm(BaseSwarm):
                 swallow.pbest_position = copy.deepcopy(swallow.position)
 
     def gbest_update(self, swallow):
-        if self.constraints is not None:
-            if self.constraints(swallow.position):
-                if swallow.fitness < self.gbest_fitness:
-                    self.gbest_fitness = copy.deepcopy(swallow.fitness)
-                    self.gbest_position = copy.deepcopy(swallow.position)
-        else:
-            if swallow.fitness < self.gbest_fitness:
-                self.gbest_fitness = copy.deepcopy(swallow.fitness)
-                self.gbest_position = copy.deepcopy(swallow.position)
+
+        if self.gbest_swallow is None:
+            self.gbest_swallow = copy.deepcopy(swallow)
+        elif swallow.fitness < self.gbest_swallow.fitness:
+            self.gbest_swallow = copy.deepcopy(swallow)
 
     def swarm_update_best(self):
         for swallow in self.population:
             self.pbest_update(swallow)
             self.gbest_update(swallow)
 
-    # Optimise
-    def termination_check(self):
-        if self.iteration >= self.n_iterations:
-            return False
-        else:
-            return True
-
     def optimise(self):
-        self.reset_environment()
 
+        self.reset_environment()
         self.initialise_swarm()
 
-        while self.termination_check():
-
-            print('Iteration {0}: {1}'.format(self.iteration,
-                                              self.gbest_fitness))
+        while not self.termination_manager.termination_check():
 
             self.w = self.iwh(self.iteration)
 
@@ -153,13 +149,13 @@ class Swarm(BaseSwarm):
                 'GBest Fitness = {:.3f}\t'
                 'GBest Position = {}'
                 ''.format(self.iteration,
-                          self.gbest_fitness,
-                          self.gbest_position)
+                          self.gbest_swallow.fitness,
+                          self.gbest_swallow.position)
             )
 
             self.iteration += 1
 
         self.rep.log('Optimisation complete...')
         self.rep.log('GBest Fitness = {:.3f}\t'
-                     'GBest Position = {}'.format(self.gbest_fitness,
-                                                  self.gbest_position))
+                     'GBest Position = {}'.format(self.gbest_swallow.fitness,
+                                                  self.gbest_swallow.position))
