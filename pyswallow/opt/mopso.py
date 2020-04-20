@@ -1,6 +1,10 @@
 from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
+
+from ..constraints.constraint_manager import ConstraintManager
 from ..utils.reporter import Reporter
+from ..utils.termination_manager import IterationTerminationManager
+
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.velocity_handler import StandardVH
 from ..handlers.inertia_handler import StandardIWH
@@ -55,7 +59,7 @@ class MOSwallow(BaseSwallow):
 class MOSwarm(BaseSwarm):
 
     def __init__(self, obj_functions, n_swallows, n_iterations, bounds,
-                 constraints=None, w=0.7, c1=2.0, c2=2.0, debug=False):
+                 w=0.7, c1=2.0, c2=2.0, debug=False):
 
         super().__init__(n_swallows, bounds, w, c1, c2)
 
@@ -64,7 +68,6 @@ class MOSwarm(BaseSwarm):
 
         self.obj_functions = obj_functions
         self.n_objs = len(self.obj_functions)
-        self.constraints = constraints
 
         self.archive = Archive(self.n_objs)
 
@@ -74,6 +77,9 @@ class MOSwarm(BaseSwarm):
         self.bh = StandardBH()
         self.vh = StandardVH()
         self.iwh = StandardIWH(self.w)
+
+        self.constraint_manager = ConstraintManager(self)
+        self.termiation_manager = IterationTerminationManager(self)
 
         self.rep.log('Swarm initialised successfully')
 
@@ -141,14 +147,8 @@ class MOSwarm(BaseSwarm):
 
     def swarm_update_pbest(self):
         for swallow in self.population:
-            self.update_pbest(swallow)
-
-    # Optimise
-    def termination_check(self):
-        if self.iteration >= self.n_iterations:
-            return False
-        else:
-            return True
+            if not self.constraint_manager.violates_position(swallow):
+                self.update_pbest(swallow)
 
     def optimise(self):
 
@@ -156,7 +156,7 @@ class MOSwarm(BaseSwarm):
         self.initialise_swarm()
         self.initialise_archive()
 
-        while self.termination_check():
+        while not self.termiation_manager.termination_check():
 
             print('Iteration: {0}: Archive Length: {1:05}'
                   ''.format(self.iteration, len(self.archive.population)))

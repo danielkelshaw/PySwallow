@@ -1,6 +1,8 @@
 from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
 
+from ..constraints.constraint_manager import ConstraintManager
+
 from ..utils.reporter import Reporter
 from ..utils.termination_manager import IterationTerminationManager
 
@@ -26,7 +28,7 @@ class Swallow(BaseSwallow):
 class Swarm(BaseSwarm):
 
     def __init__(self, obj_function, n_swallows, n_iterations, bounds,
-                 constraints=None, w=0.7, c1=2.0, c2=2.0, debug=False):
+                 w=0.7, c1=2.0, c2=2.0, debug=False):
 
         super().__init__(n_swallows, bounds, w, c1, c2)
 
@@ -36,7 +38,6 @@ class Swarm(BaseSwarm):
         self.rep = Reporter(lvl=log_debug)
 
         self.obj_function = obj_function
-        self.constraints = constraints
 
         self.iteration = 0
         self.n_iterations = n_iterations
@@ -45,6 +46,7 @@ class Swarm(BaseSwarm):
         self.vh = StandardVH()
         self.iwh = StandardIWH(self.w)
 
+        self.constraints_manager = ConstraintManager(self)
         self.termination_manager = IterationTerminationManager(self)
 
         self.rep.log('Swarm initialised successfully')
@@ -99,18 +101,11 @@ class Swarm(BaseSwarm):
             swallow.move(self.bh)
 
     def pbest_update(self, swallow):
-        if self.constraints is not None:
-            if self.constraints(swallow.position):
-                if swallow.fitness < swallow.pbest_fitness:
-                    swallow.pbest_fitness = copy.deepcopy(swallow.fitness)
-                    swallow.pbest_position = copy.deepcopy(swallow.position)
-        else:
-            if swallow.fitness < swallow.pbest_fitness:
-                swallow.pbest_fitness = copy.deepcopy(swallow.fitness)
-                swallow.pbest_position = copy.deepcopy(swallow.position)
+        if swallow.fitness < swallow.pbest_fitness:
+            swallow.pbest_fitness = copy.deepcopy(swallow.fitness)
+            swallow.pbest_position = copy.deepcopy(swallow.position)
 
     def gbest_update(self, swallow):
-
         if self.gbest_swallow is None:
             self.gbest_swallow = copy.deepcopy(swallow)
         elif swallow.fitness < self.gbest_swallow.fitness:
@@ -118,8 +113,9 @@ class Swarm(BaseSwarm):
 
     def swarm_update_best(self):
         for swallow in self.population:
-            self.pbest_update(swallow)
-            self.gbest_update(swallow)
+            if not self.constraints_manager.violates_position(swallow):
+                self.pbest_update(swallow)
+                self.gbest_update(swallow)
 
     def optimise(self):
 
