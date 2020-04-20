@@ -4,6 +4,7 @@ from ..base.base_swallow import BaseSwallow
 from ..constraints.constraint_manager import ConstraintManager
 
 from ..utils.reporter import Reporter
+from ..utils.history import GeneralHistory
 from ..utils.termination_manager import IterationTerminationManager
 
 from ..handlers.boundary_handler import StandardBH
@@ -45,6 +46,8 @@ class Swarm(BaseSwarm):
         self.bh = StandardBH()
         self.vh = StandardVH()
         self.iwh = StandardIWH(self.w)
+
+        self.history = GeneralHistory(self)
 
         self.constraints_manager = ConstraintManager(self)
         self.termination_manager = IterationTerminationManager(self)
@@ -131,6 +134,8 @@ class Swarm(BaseSwarm):
 
             self.swarm_update_velocity()
             self.swarm_move()
+
+            self.history.write_history()
 
             self.rep.log(
                 'Iteration {}\t'
