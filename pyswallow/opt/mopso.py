@@ -2,7 +2,9 @@ from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
 
 from ..constraints.constraint_manager import ConstraintManager
+
 from ..utils.reporter import Reporter
+from ..utils.history import GeneralHistory
 from ..utils.termination_manager import IterationTerminationManager
 
 from ..handlers.boundary_handler import StandardBH
@@ -77,6 +79,8 @@ class MOSwarm(BaseSwarm):
         self.bh = StandardBH()
         self.vh = StandardVH()
         self.iwh = StandardIWH(self.w)
+
+        self.history = GeneralHistory(self)
 
         self.constraint_manager = ConstraintManager(self)
         self.termiation_manager = IterationTerminationManager(self)
@@ -175,6 +179,8 @@ class MOSwarm(BaseSwarm):
 
             self.swarm_update_velocity()
             self.swarm_move()
+
+            self.history.write_history()
 
             self.rep.log(
                 'Iteration {}\t'
