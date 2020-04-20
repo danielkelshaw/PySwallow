@@ -41,7 +41,6 @@ class TestSOSwarm:
                        n_swallows=30,
                        n_iterations=1000,
                        bounds=bounds,
-                       constraints=None,
                        debug=False)
         return opt
 
