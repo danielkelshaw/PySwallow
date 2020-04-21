@@ -14,10 +14,6 @@ class BaseSwarm(ABC):
         self.bounds = bounds
         self.pnames = list(bounds.keys())
 
-        _bounds = np.asarray(list(bounds.values()))
-        self._lb = _bounds[:, 0]
-        self._ub = _bounds[:, 1]
-
         self.w = w
         self.c1 = c1
         self.c2 = c2
@@ -36,6 +32,15 @@ class BaseSwarm(ABC):
     def update_velocity(self, swallow):
         raise NotImplementedError('BaseSwarm::update_velocity()')
 
+    @staticmethod
     @abstractmethod
-    def evaluate_fitness(self, swallow):
+    def evaluate_fitness(*args):
         raise NotImplementedError('BaseSwarm::evaluate_fitness()')
+
+    @abstractmethod
+    def step_optimise(self, fn):
+        raise NotImplementedError('BaseSwarm::step_optimise()')
+
+    @abstractmethod
+    def optimise(self, fn):
+        raise NotImplementedError('BaseSwarm::optimise()')

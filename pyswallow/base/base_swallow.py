@@ -12,8 +12,8 @@ class BaseSwallow(ABC):
         self._pnames = list(bounds.keys())
         _bounds = np.asarray(list(bounds.values()))
 
-        self.lb = _bounds[:, 0]
-        self.ub = _bounds[:, 1]
+        self.lb = _bounds[0, :]
+        self.ub = _bounds[1, :]
 
         self.position = np.random.uniform(self.lb, self.ub)
         self.velocity = np.random.uniform(self.lb, self.ub)
