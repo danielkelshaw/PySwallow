@@ -154,6 +154,32 @@ class MOSwarm(BaseSwarm):
             if not self.constraint_manager.violates_position(swallow):
                 self.update_pbest(swallow)
 
+    def step_optimise(self):
+
+        self.w = self.iwh(self.iteration)
+
+        self.swarm_evaluate_fitness()
+        self.swarm_update_pbest()
+
+        for swallow in self.population:
+            self.archive.add_swallow(swallow)
+
+        self.archive.pareto_front()
+        self.archive.assign_sparsity()
+        self.archive.sparsity_limit(n_limit=self.n_swallows)
+
+        self.swarm_update_velocity()
+        self.swarm_move()
+
+        self.history.write_history()
+
+        self.rep.log(
+            'Iteration {}\t'
+            'Archive Length = {:03}\t'
+            ''.format(self.iteration,
+                      len(self.archive.population))
+        )
+
     def optimise(self):
 
         self.reset_environment()
@@ -161,34 +187,7 @@ class MOSwarm(BaseSwarm):
         self.initialise_archive()
 
         while not self.termiation_manager.termination_check():
-
-            print('Iteration: {0}: Archive Length: {1:05}'
-                  ''.format(self.iteration, len(self.archive.population)))
-
-            self.w = self.iwh(self.iteration)
-
-            self.swarm_evaluate_fitness()
-            self.swarm_update_pbest()
-
-            for swallow in self.population:
-                self.archive.add_swallow(swallow)
-
-            self.archive.pareto_front()
-            self.archive.assign_sparsity()
-            self.archive.sparsity_limit(n_limit=self.n_swallows)
-
-            self.swarm_update_velocity()
-            self.swarm_move()
-
-            self.history.write_history()
-
-            self.rep.log(
-                'Iteration {}\t'
-                'Archive Length = {:03}\t'
-                ''.format(self.iteration,
-                          len(self.archive.population))
-            )
-
+            self.step_optimise()
             self.iteration += 1
 
         self.rep.log('Optimisation complete...')

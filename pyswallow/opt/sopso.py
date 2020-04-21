@@ -120,32 +120,33 @@ class Swarm(BaseSwarm):
                 self.pbest_update(swallow)
                 self.gbest_update(swallow)
 
+    def step_optimise(self):
+        self.w = self.iwh(self.iteration)
+
+        self.swarm_evaluate_fitness()
+        self.swarm_update_best()
+
+        self.swarm_update_velocity()
+        self.swarm_move()
+
+        self.history.write_history()
+
+        self.rep.log(
+            'Iteration {}\t'
+            'GBest Fitness = {:.3f}\t'
+            'GBest Position = {}'
+            ''.format(self.iteration,
+                      self.gbest_swallow.fitness,
+                      self.gbest_swallow.position)
+        )
+
     def optimise(self):
 
         self.reset_environment()
         self.initialise_swarm()
 
         while not self.termination_manager.termination_check():
-
-            self.w = self.iwh(self.iteration)
-
-            self.swarm_evaluate_fitness()
-            self.swarm_update_best()
-
-            self.swarm_update_velocity()
-            self.swarm_move()
-
-            self.history.write_history()
-
-            self.rep.log(
-                'Iteration {}\t'
-                'GBest Fitness = {:.3f}\t'
-                'GBest Position = {}'
-                ''.format(self.iteration,
-                          self.gbest_swallow.fitness,
-                          self.gbest_swallow.position)
-            )
-
+            self.step_optimise()
             self.iteration += 1
 
         self.rep.log('Optimisation complete...')
