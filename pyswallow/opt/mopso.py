@@ -1,20 +1,20 @@
+import logging
+import numpy as np
+import matplotlib.pyplot as plt
+
 from ..base.base_swarm import BaseSwarm
 from ..base.base_swallow import BaseSwallow
 
 from ..constraints.constraint_manager import ConstraintManager
 
 from ..utils.reporter import Reporter
-from ..utils.history import GeneralHistory
+from ..utils.history import MOHistory
 from ..utils.termination_manager import IterationTerminationManager
 
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.velocity_handler import StandardVH
 from ..handlers.inertia_handler import StandardIWH
 from ..handlers.archive import Archive
-
-import numpy as np
-import matplotlib.pyplot as plt
-import logging
 
 
 class MOSwallow(BaseSwallow):
@@ -60,18 +60,16 @@ class MOSwallow(BaseSwallow):
 
 class MOSwarm(BaseSwarm):
 
-    def __init__(self, obj_functions, n_swallows, n_iterations, bounds,
+    def __init__(self, n_swallows, n_iterations, bounds,
                  w=0.7, c1=2.0, c2=2.0, debug=False):
 
         super().__init__(n_swallows, bounds, w, c1, c2)
 
-        log_debug = logging.DEBUG if debug else logging.INFO
-        self.rep = Reporter(lvl=log_debug)
+        log_level = logging.DEBUG if debug else logging.INFO
+        self.rep = Reporter(lvl=log_level)
 
-        self.obj_functions = obj_functions
-        self.n_objs = len(self.obj_functions)
-
-        self.archive = Archive(self.n_objs)
+        self.n_objs = None
+        self.archive = None
 
         self.iteration = 0
         self.n_iterations = n_iterations
@@ -80,41 +78,32 @@ class MOSwarm(BaseSwarm):
         self.vh = StandardVH()
         self.iwh = StandardIWH(self.w)
 
-        self.history = GeneralHistory(self)
+        self.history = MOHistory(self)
 
         self.constraint_manager = ConstraintManager(self)
         self.termiation_manager = IterationTerminationManager(self)
 
-        self.rep.log('Swarm initialised successfully')
+        self.rep.log('MOSwarm::__init__()')
 
-    # Reset methods
     def reset_environment(self):
         self.iteration = 0
-        self.reset_populations()
-        self.rep.log('Environment reset', lvl=logging.DEBUG)
-
-    def reset_populations(self):
         self.population = []
         self.archive = Archive(self.n_objs)
-        self.rep.log('Populations reset', lvl=logging.DEBUG)
+        self.rep.log('MOSwarm::reset_environment()', lvl=logging.DEBUG)
 
-    # Initialisation
     def initialise_swarm(self):
         self.population = [MOSwallow(self.bounds, self.n_objs)
                            for _ in range(self.n_swallows)]
-        self.rep.log('Population initialised', lvl=logging.DEBUG)
+        self.rep.log('MOSwarm::initialise_swarm()', lvl=logging.DEBUG)
 
     def initialise_archive(self):
         self.archive = Archive(self.n_objs)
+        self.rep.log('MOSwarm::initialise_archive()', lvl=logging.DEBUG)
 
-    # Update Methods
-    def evaluate_fitness(self, swallow):
-        for idx, function in enumerate(self.obj_functions):
+    @staticmethod
+    def evaluate_fitness(swallow, fns):
+        for idx, function in enumerate(fns):
             swallow.fitness[idx] = function(swallow.position)
-
-    def swarm_evaluate_fitness(self):
-        for swallow in self.population:
-            self.evaluate_fitness(swallow)
 
     def update_velocity(self, swallow):
 
@@ -134,42 +123,33 @@ class MOSwarm(BaseSwarm):
         swallow.velocity = inertial() + cognitive() + social()
         swallow.velocity = self.vh(swallow.velocity)
 
-    def swarm_update_velocity(self):
-        for swallow in self.population:
-            self.update_velocity(swallow)
-
-    def swarm_move(self):
-        for swallow in self.population:
-            swallow.move(self.bh)
-
     @staticmethod
     def update_pbest(swallow):
-        # TODO [CONSIDER] >> Should the Swallow class handle this?
         if swallow.self_dominate():
             swallow.pbest_position = swallow.position
             swallow.pbest_fitness = swallow.fitness
 
-    def swarm_update_pbest(self):
-        for swallow in self.population:
-            if not self.constraint_manager.violates_position(swallow):
-                self.update_pbest(swallow)
-
-    def step_optimise(self):
+    def step_optimise(self, fns):
 
         self.w = self.iwh(self.iteration)
 
-        self.swarm_evaluate_fitness()
-        self.swarm_update_pbest()
+        for swallow in self.population:
+            self.evaluate_fitness(swallow, fns)
+
+            if not self.constraint_manager.violates_position(swallow):
+                self.update_pbest(swallow)
 
         for swallow in self.population:
-            self.archive.add_swallow(swallow)
+            if not self.constraint_manager.violates_position(swallow):
+                self.archive.add_swallow(swallow)
 
         self.archive.pareto_front()
         self.archive.assign_sparsity()
         self.archive.sparsity_limit(n_limit=self.n_swallows)
 
-        self.swarm_update_velocity()
-        self.swarm_move()
+        for swallow in self.population:
+            self.update_velocity(swallow)
+            swallow.move(self.bh)
 
         self.history.write_history()
 
@@ -180,14 +160,16 @@ class MOSwarm(BaseSwarm):
                       len(self.archive.population))
         )
 
-    def optimise(self):
+    def optimise(self, fns):
 
         self.reset_environment()
+        self.n_objs = len(fns)
+
         self.initialise_swarm()
         self.initialise_archive()
 
         while not self.termiation_manager.termination_check():
-            self.step_optimise()
+            self.step_optimise(fns)
             self.iteration += 1
 
         self.rep.log('Optimisation complete...')
