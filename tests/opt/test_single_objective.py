@@ -37,8 +37,7 @@ class TestSOSwarm:
             'x1': [50.0, 50.0]
         }
 
-        opt = ps.Swarm(obj_function=sphere,
-                       n_swallows=30,
+        opt = ps.Swarm(n_swallows=30,
                        n_iterations=1000,
                        bounds=bounds,
                        debug=False)
@@ -70,7 +69,7 @@ class TestSOSwarm:
 
     @pytest.fixture
     def reset_optimiser(self, optimiser):
-        optimiser.optimise()
+        optimiser.optimise(sphere)
         optimiser.reset_environment()
         return optimiser
 
@@ -88,7 +87,7 @@ class TestSOSwarm:
 
     def test_eval_fitness(self, optimiser, swallow):
         target_fit = sphere(swallow.position)
-        optimiser.evaluate_fitness(swallow)
+        optimiser.evaluate_fitness(swallow, sphere)
         assert target_fit == swallow.fitness
 
     @pytest.mark.parametrize('f', [50, 0, -50])
@@ -117,7 +116,7 @@ class TestSOSwarm:
         target_fit = 0.0
         target_pos = np.array([0, 0])
 
-        optimiser.optimise()
+        optimiser.optimise(sphere)
 
         assert np.allclose(optimiser.gbest_swallow.fitness,
                            target_fit,

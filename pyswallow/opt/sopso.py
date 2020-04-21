@@ -50,7 +50,12 @@ class Swarm(BaseSwarm):
         self.constraints_manager = ConstraintManager(self)
         self.termination_manager = IterationTerminationManager(self)
 
-        self.rep.log('Swarm::__init__()')
+        self.rep.log(
+            f'Swarm::__init__('
+            f'n_swallows={n_swallows},'
+            f'n_iterations={n_iterations},'
+            f'bounds={bounds}'
+            f')', lvl=logging.DEBUG)
 
     def reset_environment(self):
         self.iteration = 0
@@ -82,6 +87,12 @@ class Swarm(BaseSwarm):
         swallow.velocity = inertial() + cognitive() + social()
         swallow.velocity = self.vh(swallow.velocity)
 
+        self.rep.log(
+            f'Swarm::update_velocity(swallow={swallow})\t'
+            f'velocity={swallow.velocity}',
+            lvl=logging.DEBUG
+        )
+
     @staticmethod
     def pbest_update(swallow):
         if swallow.fitness < swallow.pbest_fitness:
@@ -92,6 +103,12 @@ class Swarm(BaseSwarm):
         if (self.gbest_swallow is None or
                 swallow.fitness < self.gbest_swallow.fitness):
             self.gbest_swallow = copy.deepcopy(swallow)
+
+        self.rep.log(
+            f'Swarm::gbest_update({swallow})\t'
+            f'gbest_swallow={self.gbest_swallow}',
+            lvl=logging.DEBUG
+        )
 
     def step_optimise(self, fn):
 

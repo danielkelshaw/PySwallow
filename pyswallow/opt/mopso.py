@@ -83,7 +83,13 @@ class MOSwarm(BaseSwarm):
         self.constraint_manager = ConstraintManager(self)
         self.termiation_manager = IterationTerminationManager(self)
 
-        self.rep.log('MOSwarm::__init__()')
+        self.rep.log(
+            f'MOSwarm::__init__('
+            f'n_swallows={n_swallows},'
+            f'n_iterations={n_iterations},'
+            f'bounds={bounds}'
+            f')', lvl=logging.DEBUG
+        )
 
     def reset_environment(self):
         self.iteration = 0
@@ -123,6 +129,12 @@ class MOSwarm(BaseSwarm):
         swallow.velocity = inertial() + cognitive() + social()
         swallow.velocity = self.vh(swallow.velocity)
 
+        self.rep.log(
+            f'MOSwarm::update_velocity(swallow={swallow})\t'
+            f'velocity={swallow.velocity}',
+            lvl=logging.DEBUG
+        )
+
     @staticmethod
     def update_pbest(swallow):
         if swallow.self_dominate():
@@ -154,10 +166,8 @@ class MOSwarm(BaseSwarm):
         self.history.write_history()
 
         self.rep.log(
-            'Iteration {}\t'
-            'Archive Length = {:03}\t'
-            ''.format(self.iteration,
-                      len(self.archive.population))
+            f'iteration={self.iteration:05}\t'
+            f'archive_length={len(self.archive.population):03}'
         )
 
     def optimise(self, fns):
@@ -173,28 +183,9 @@ class MOSwarm(BaseSwarm):
             self.iteration += 1
 
         self.rep.log('Optimisation complete...')
-        self.rep.log('Archive contents:')
-
         for idx, swallow in enumerate(self.archive.population):
-            self.rep.log('Swallow {:03}\t'
-                         'Fitness = {}\t'
-                         'Position = {}'
-                         ''.format(idx, swallow.fitness, swallow.position))
-
-    def plot_archive(self, save=False):
-
-        if self.n_objs == 2:
-
-            f1 = [swallow.fitness[0] for swallow in self.archive.population]
-            f2 = [swallow.fitness[1] for swallow in self.archive.population]
-
-            fig = plt.figure(figsize=(16, 10))
-            plt.scatter(f1, f2, s=5)
-
-            if save:
-                plt.savefig('plot.png')
-            else:
-                plt.show()
-
-        else:
-            raise ValueError('Must be 2 objectives...')
+            self.rep.log(
+                f'archive_swallow={idx:03}\t'
+                f'fitness={swallow.fitness}\t'
+                f'position={swallow.position}'
+            )
