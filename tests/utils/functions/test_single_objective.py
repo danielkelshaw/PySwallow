@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 import pyswallow.utils.functions.single_objective as fx
 
 

@@ -1,7 +1,6 @@
-import pytest
 import numpy as np
+import pytest
 
-import pyswallow as ps
 from pyswallow.handlers.boundary_handler import (
     StandardBH, NearestBH, ReflectiveBH, RandomBH
 )
