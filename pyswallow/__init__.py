@@ -1,6 +1,4 @@
-from .opt import *
-from .base import *
-from .handlers import *
-from .utils import *
-
-__all__ = ['opt', 'base', 'handlers', 'utils']
+from .opt.mopso import MOSwarm
+from .opt.sopso import Swarm
+from .swallows.mo_swallow import MOSwallow
+from .swallows.so_swallow import Swallow

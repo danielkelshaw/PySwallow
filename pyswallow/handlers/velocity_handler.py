@@ -1,5 +1,6 @@
-from .base_handler import BaseHandler
 import numpy as np
+
+from .base_handler import BaseHandler
 
 
 class StandardVH(BaseHandler):

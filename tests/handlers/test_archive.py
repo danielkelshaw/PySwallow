@@ -1,5 +1,4 @@
 import pytest
-import numpy as np
 
 import pyswallow as ps
 from pyswallow.handlers.archive import Archive

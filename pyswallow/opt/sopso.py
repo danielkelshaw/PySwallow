@@ -1,35 +1,65 @@
 import copy
 import logging
+
 import numpy as np
 
-from ..base.base_swarm import BaseSwarm
-from ..base.base_swallow import BaseSwallow
-
+from pyswallow.opt.base_swarm import BaseSwarm
 from ..constraints.constraint_manager import ConstraintManager
-
-from ..utils.reporter import Reporter
-from ..utils.history import SOHistory
-from ..utils.termination_manager import IterationTerminationManager
-
 from ..handlers.boundary_handler import StandardBH
-from ..handlers.velocity_handler import StandardVH
 from ..handlers.inertia_handler import StandardIWH
-
-
-class Swallow(BaseSwallow):
-
-    def __init__(self, bounds):
-        super().__init__(bounds)
-
-    def move(self, bh):
-        self.position += self.velocity
-        self.position = bh(self.position)
+from ..handlers.velocity_handler import StandardVH
+from ..swallows.so_swallow import Swallow
+from ..utils.history import SOHistory
+from ..utils.reporter import Reporter
+from ..utils.termination_manager import IterationTerminationManager
 
 
 class Swarm(BaseSwarm):
 
     def __init__(self, n_swallows, n_iterations, bounds,
                  w=0.7, c1=2.0, c2=2.0, debug=False):
+
+        """
+        Initialiser for the Swarm class.
+
+        Parameters
+        ----------
+        n_swallows : int
+            Population size.
+        n_iterations : int
+            Number of iterations to run optimisation for.
+        bounds : dict
+            Provides the upper and lower bounds of the search space.
+        w : float
+            Inertia weight.
+        c1 : float
+            Cognitive weight.
+        c2 : float
+            Social weight.
+        debug : bool
+            True if you want to log debugging, False otherwise.
+
+        Attributes
+        ---------
+        rep : Reporter
+            Provides ability to log / debug the optimisation.å
+        gbest_swallow : Swallow
+            Swallow with the current best fitness.
+        iteration : int
+            Current iteration of the optimisation procedure.
+        bh : BaseHandler
+            Manipulates position dependant on boundary interactions.
+        vh : BaseHandler
+            Manipulates the velocity dependant on boundary interactions.
+        iwh : InertiaWeightHandler
+            Manipulates the inertia weight.
+        history : MOHistory
+            Records the optimisation history.
+        constraint_manager : ConstraintManager
+            Determines if imposed constraints have been violated.
+        termination_manager : BaseTerminationManager
+            Determines whether termination criteria have been fulfilled.
+        """
 
         super().__init__(n_swallows, bounds, w, c1, c2)
 
@@ -58,20 +88,47 @@ class Swarm(BaseSwarm):
             f')', lvl=logging.DEBUG)
 
     def reset_environment(self):
+
+        """Responsible for resetting the optimisation environment."""
+
         self.iteration = 0
         self.gbest_swallow = None
         self.population = []
         self.rep.log('Swarm::reset_environment()', lvl=logging.DEBUG)
 
     def initialise_swarm(self):
+
+        """Initialises the population with Swallow objects."""
+
         self.population = [Swallow(self.bounds) for _ in range(self.n_swallows)]
         self.rep.log('Swarm::initialise_swarm()', lvl=logging.DEBUG)
 
     @staticmethod
     def evaluate_fitness(swallow, fn):
+
+        """
+        Assesses the fitness of the swallow.
+
+        Parameters
+        ----------
+        swallow : MOSwallow
+            Swallow for which to assess the fitness.
+        fn : function
+            Function to use in order to assess the fitness.
+        """
+
         swallow.fitness = fn(swallow.position)
 
     def update_velocity(self, swallow):
+
+        """
+        Updates the velocity of a given swallow.
+
+        Parameters
+        ----------
+        swallow : MOSwallow
+            Swallow for which to update the velocity.
+        """
 
         def inertial():
             return self.w * swallow.velocity
@@ -95,11 +152,31 @@ class Swarm(BaseSwarm):
 
     @staticmethod
     def pbest_update(swallow):
+
+        """
+        Updates the pbest values of the swallow.
+
+        Parameters
+        ----------
+        swallow : Swallow
+            Swallow for which to update the pbest_fitness.
+        """
+
         if swallow.fitness < swallow.pbest_fitness:
             swallow.pbest_fitness = swallow.fitness
             swallow.pbest_position = swallow.position
 
     def gbest_update(self, swallow):
+
+        """
+        Updates the gbest value of the swarm.
+
+        Parameters
+        ----------
+        swallow : Swallow
+            Swallow with which to update the gbest_swallow.
+        """
+
         if (self.gbest_swallow is None or
                 swallow.fitness < self.gbest_swallow.fitness):
             self.gbest_swallow = copy.deepcopy(swallow)
@@ -111,6 +188,15 @@ class Swarm(BaseSwarm):
         )
 
     def step_optimise(self, fn):
+
+        """
+        Runs one iteration of the optimisation process.
+
+        Parameters
+        ----------
+        fn : function
+            Funnction to optimise for.
+        """
 
         self.w = self.iwh(self.iteration)
 
@@ -137,6 +223,15 @@ class Swarm(BaseSwarm):
 
     def optimise(self, fn):
 
+        """
+        Runs the entire optimisation process.
+
+        Parameters
+        ----------
+        fn : function
+            Function to optimise for.
+        """
+
         self.reset_environment()
         self.initialise_swarm()
 
@@ -150,3 +245,4 @@ class Swarm(BaseSwarm):
             f'\tgbest_fitness={self.gbest_swallow.fitness:.3f}\n'
             f'\tgbest_position={self.gbest_swallow.position}'
         )
+

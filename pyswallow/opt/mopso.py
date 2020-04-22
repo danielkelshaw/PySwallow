@@ -1,67 +1,67 @@
 import logging
+
 import numpy as np
-import matplotlib.pyplot as plt
 
-from ..base.base_swarm import BaseSwarm
-from ..base.base_swallow import BaseSwallow
-
+from pyswallow.opt.base_swarm import BaseSwarm
 from ..constraints.constraint_manager import ConstraintManager
-
-from ..utils.reporter import Reporter
-from ..utils.history import MOHistory
-from ..utils.termination_manager import IterationTerminationManager
-
-from ..handlers.boundary_handler import StandardBH
-from ..handlers.velocity_handler import StandardVH
-from ..handlers.inertia_handler import StandardIWH
 from ..handlers.archive import Archive
-
-
-class MOSwallow(BaseSwallow):
-
-    def __init__(self, bounds, n_obj):
-
-        super().__init__(bounds)
-        self.n_obj = n_obj
-
-        self.fitness = [None] * n_obj
-        self.pbest_fitness = [float('inf')] * n_obj
-        self.sparsity = 0
-
-    def move(self, bh):
-
-        self.position += self.velocity
-        self.position = bh(self.position)
-
-    def dominate(self, opponent):
-
-        self_dominates = False
-
-        for i in range(self.n_obj):
-            if self.fitness[i] < opponent.fitness[i]:
-                self_dominates = True
-            elif opponent.fitness[i] < self.fitness[i]:
-                return False
-
-        return self_dominates
-
-    def self_dominate(self):
-
-        new_fitness_dominates = False
-
-        for i in range(self.n_obj):
-            if self.fitness[i] < self.pbest_fitness[i]:
-                new_fitness_dominates = True
-            elif self.pbest_fitness[i] < self.fitness[i]:
-                return False
-
-        return new_fitness_dominates
+from ..handlers.boundary_handler import StandardBH
+from ..handlers.inertia_handler import StandardIWH
+from ..handlers.velocity_handler import StandardVH
+from ..swallows.mo_swallow import MOSwallow
+from ..utils.history import MOHistory
+from ..utils.reporter import Reporter
+from ..utils.termination_manager import IterationTerminationManager
 
 
 class MOSwarm(BaseSwarm):
 
     def __init__(self, n_swallows, n_iterations, bounds,
                  w=0.7, c1=2.0, c2=2.0, debug=False):
+
+        """
+        Initialiser for the MOSwarm class.
+
+        Parameters
+        ----------
+        n_swallows : int
+            Population size.
+        n_iterations : int
+            Number of iterations to run optimisation for.
+        bounds : dict
+            Provides the upper and lower bounds of the search space.
+        w : float
+            Inertia weight.
+        c1 : float
+            Cognitive weight.
+        c2 : float
+            Social weight.
+        debug : bool
+            True if you want to log debugging, False otherwise.
+
+        Attributes
+        ----------
+        rep : Reporter
+            Provides ability to log / debug the optimisation.
+        n_objs : int
+            Number of objectives.
+        archive : Archive
+            Class to deal with Pareto dominance.
+        iteration : int
+            Current iteration of the optimisation procedure.
+        bh : BaseHandler
+            Manipulates position dependant on boundary interactions.
+        vh : BaseHandler
+            Manipulates the velocity dependant on boundary interactions.
+        iwh : InertiaWeightHandler
+            Manipulates the inertia weight.
+        history : MOHistory
+            Records the optimisation history.
+        constraint_manager : ConstraintManager
+            Determines if imposed constraints have been violated.
+        termination_manager : BaseTerminationManager
+            Determines whether termination criteria have been fulfilled.
+        """
 
         super().__init__(n_swallows, bounds, w, c1, c2)
 
@@ -92,26 +92,56 @@ class MOSwarm(BaseSwarm):
         )
 
     def reset_environment(self):
+
+        """Responsible for resetting the optimisation environment."""
+
         self.iteration = 0
         self.population = []
         self.archive = Archive(self.n_objs)
         self.rep.log('MOSwarm::reset_environment()', lvl=logging.DEBUG)
 
     def initialise_swarm(self):
+
+        """Initialises the population with MOSwallow objects."""
+
         self.population = [MOSwallow(self.bounds, self.n_objs)
                            for _ in range(self.n_swallows)]
         self.rep.log('MOSwarm::initialise_swarm()', lvl=logging.DEBUG)
 
     def initialise_archive(self):
+
+        """Instantiates an Archive instance."""
+
         self.archive = Archive(self.n_objs)
         self.rep.log('MOSwarm::initialise_archive()', lvl=logging.DEBUG)
 
     @staticmethod
     def evaluate_fitness(swallow, fns):
+
+        """
+        Assesses the fitness of the swallow.
+
+        Parameters
+        ----------
+        swallow : MOSwallow
+            Swallow for which to assess the fitness.
+        fns : list
+            Functions to use in order to assess the fitness.
+        """
+
         for idx, function in enumerate(fns):
             swallow.fitness[idx] = function(swallow.position)
 
     def update_velocity(self, swallow):
+
+        """
+        Updates the velocity of a given swallow.
+
+        Parameters
+        ----------
+        swallow : MOSwallow
+            Swallow for which to update the velocity.
+        """
 
         _leader = self.archive.choose_leader()
 
@@ -137,11 +167,30 @@ class MOSwarm(BaseSwarm):
 
     @staticmethod
     def update_pbest(swallow):
+
+        """
+        Updates the pbest values of the swallow.
+
+        Parameters
+        ----------
+        swallow : MOSwallow
+            Swallow for which to update the pbest_fitness.
+        """
+
         if swallow.self_dominate():
             swallow.pbest_position = swallow.position
             swallow.pbest_fitness = swallow.fitness
 
     def step_optimise(self, fns):
+
+        """
+        Runs one iteration of the optimisation process.
+
+        Parameters
+        ----------
+        fns : list
+            List of functions to optimise for.
+        """
 
         self.w = self.iwh(self.iteration)
 
@@ -171,6 +220,15 @@ class MOSwarm(BaseSwarm):
         )
 
     def optimise(self, fns):
+
+        """
+        Runs the entire optimisation process.
+
+        Parameters
+        ----------
+        fns : list
+            List of functions to optimise for.
+        """
 
         self.reset_environment()
         self.n_objs = len(fns)
