@@ -3,17 +3,17 @@ from abc import ABC, abstractmethod
 
 class BaseSwarm(ABC):
 
-    def __init__(self, n_swallows, bounds, w, c1, c2):
+    def __init__(self, bounds, n_swallows, w, c1, c2):
 
         """
         Initialiser for BaseSwarm class.
 
         Parameters
         ----------
-        n_swallows : int
-            Number of swallows for use in the population.
         bounds : dict
             Bounds to impose on the search space.
+        n_swallows : int
+            Number of swallows for use in the population.
         w : float
             Inertia weight.
         c1 : float

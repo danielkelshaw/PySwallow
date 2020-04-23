@@ -16,7 +16,7 @@ from ..utils.termination_manager import IterationTerminationManager
 
 class Swarm(BaseSwarm):
 
-    def __init__(self, n_swallows, n_iterations, bounds,
+    def __init__(self, bounds, n_swallows, n_iterations,
                  w=0.7, c1=2.0, c2=2.0, debug=False):
 
         """
@@ -24,12 +24,12 @@ class Swarm(BaseSwarm):
 
         Parameters
         ----------
+        bounds : dict
+            Provides the upper and lower bounds of the search space.
         n_swallows : int
             Population size.
         n_iterations : int
             Number of iterations to run optimisation for.
-        bounds : dict
-            Provides the upper and lower bounds of the search space.
         w : float
             Inertia weight.
         c1 : float
@@ -61,7 +61,7 @@ class Swarm(BaseSwarm):
             Determines whether termination criteria have been fulfilled.
         """
 
-        super().__init__(n_swallows, bounds, w, c1, c2)
+        super().__init__(bounds, n_swallows, w, c1, c2)
 
         self.gbest_swallow = None
 

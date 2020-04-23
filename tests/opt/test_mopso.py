@@ -13,10 +13,13 @@ class TestMOSwarm:
             'x0': [0.0, 50.0],
         }
 
-        opt = ps.MOSwarm(n_swallows=30,
-                         n_iterations=100,
-                         bounds=bounds,
-                         debug=False)
+        opt = ps.MOSwarm(
+            n_swallows=30,
+            bounds=bounds,
+            n_iterations=100,
+            debug=False
+        )
+
         return opt
 
     @pytest.fixture

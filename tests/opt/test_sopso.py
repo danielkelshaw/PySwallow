@@ -14,10 +14,13 @@ class TestSOSwarm:
             'x1': [50.0, 50.0]
         }
 
-        opt = ps.Swarm(n_swallows=30,
-                       n_iterations=1000,
-                       bounds=bounds,
-                       debug=False)
+        opt = ps.Swarm(
+            n_swallows=30,
+            bounds=bounds,
+            n_iterations=1000,
+            debug=False
+        )
+
         return opt
 
     @pytest.fixture
