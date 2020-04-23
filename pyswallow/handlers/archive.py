@@ -7,13 +7,38 @@ class Archive:
 
     def __init__(self, n_objectives):
 
+        """
+        Initialiser for the Archive class.
+
+        Parameters
+        ----------
+        n_objectives : int
+            Number of objectives being optimised for.
+
+        Attributes
+        population : list
+            Holds the members of the archive.
+        """
+
         self.population = []
         self.n_objectives = n_objectives
 
     def add_swallow(self, swallow):
+
+        """
+        Responsible for adding a swallow to the archive.
+
+        Parameters
+        ----------
+        swallow : BaseSwallow
+            Swallow to be added to the archive.
+        """
+
         self.population.append(swallow)
 
     def pareto_front(self):
+
+        """Calculates the Pareto front of the archive."""
 
         pf = []
 
@@ -31,6 +56,8 @@ class Archive:
         self.population = pf
 
     def assign_sparsity(self):
+
+        """Assigns a sparsity to each member of the archive."""
 
         _population = copy.deepcopy(self.population)
 
@@ -52,12 +79,35 @@ class Archive:
 
     def sparsity_limit(self, n_limit):
 
+        """
+        Caps the archive size, keeping the sparsest N swallows.
+
+        Parameters
+        ----------
+        n_limit : int
+            Archive size limit.
+        """
+
         if len(self.population) > n_limit:
             self.population = sorted(self.population,
                                      key=lambda x: x.sparsity,
                                      reverse=True)[:n_limit]
 
     def choose_leader(self, method=0):
+
+        """
+        Chooses a leader for use in velocity calculations.
+
+        Parameters
+        ----------
+        method : int
+            Leader selection method to use.
+
+        Returns
+        -------
+        BaseSwallow
+            Copy of the swallow to use as the leader.
+        """
 
         if method == 0:
             return copy.deepcopy(np.random.choice(self.population))
