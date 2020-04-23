@@ -1,6 +1,9 @@
 .idea/
 .ipynb_checkpoints/
 .pytest_cache/
+*.egg-info/
+build/
+dist/
 *.pyc
 *.log
 tmp_*
