@@ -1,5 +1,6 @@
 # PySwallow
 
+[![PyPI Version](https://badge.fury.io/py/PySwallow.svg)](https://badge.fury.io/py/PySwallow)
 [![Build Status](https://travis-ci.org/danielkelshaw/PySwallow.svg?branch=master)](https://travis-ci.org/danielkelshaw/PySwallow)
 
 PySwallow is an extensible toolkit for PSO.
@@ -15,6 +16,13 @@ custom implementations which interface with existing functionality.
 ## **Features:**
 - [x] High-level module for Particle Swarm Optimisation.
 - [x] Extensible API for implementing new functionality.
+
+## **Installation:**
+To install PySwallow, run this command in your terminal:
+
+```shell
+$ pip install pyswallow
+```
 
 ## **Basic Usage:**
 PySwallow aims to provide a high-level interface for PSO - the code 
