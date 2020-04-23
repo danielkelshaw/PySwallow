@@ -13,7 +13,6 @@ class TestArchive:
     @pytest.fixture
     def pop_archive(self, archive):
         for i in range(30):
-
             bounds = {
                 'x0': [0.0, 0.0],
                 'x1': [5.0, 5.0]

@@ -98,7 +98,7 @@ class EvaluationTerminationManager(BaseTerminationManager):
         """
 
         self.swarm = swarm
-        self.n_iterations = n_evaluations // swarm.n_individuals
+        self.n_iterations = n_evaluations // swarm.n_swallows
 
     def termination_check(self):
         if self.swarm.iteration > self.n_iterations:

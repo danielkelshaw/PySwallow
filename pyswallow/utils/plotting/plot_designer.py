@@ -1,7 +1,5 @@
 class PlotDesigner:
 
-    """Containts information required to format plots."""
-
     def __init__(self):
 
         """

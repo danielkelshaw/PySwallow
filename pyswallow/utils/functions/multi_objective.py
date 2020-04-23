@@ -2,7 +2,6 @@ import numpy as np
 
 
 def binh_korn():
-
     def func_one(position):
         if not position.shape[0] == 2:
             raise IndexError('Binh & Korn only takes two-dimensional inputs.')
@@ -58,7 +57,6 @@ def binh_korn():
 
 
 def schaffer_n1():
-
     def func_one(position):
         if not position.shape[0] == 1:
             raise IndexError('Schaffer N1 only takes one-dimensional input.')

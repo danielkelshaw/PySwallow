@@ -9,7 +9,6 @@ class TestSOSwallow:
 
     @pytest.fixture
     def swallow(self):
-
         bounds = {
             'x0': [-50.0, -50.0],
             'x01': [50.0, 50.0]

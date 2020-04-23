@@ -25,10 +25,6 @@ class Swallow(BaseSwallow):
         ----------
         bh : BaseHandler
             Alters the position according to the strategy.
-
-        Returns
-        -------
-
         """
 
         self.position += self.velocity

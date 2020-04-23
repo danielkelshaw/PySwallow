@@ -245,4 +245,3 @@ class Swarm(BaseSwarm):
             f'\tgbest_fitness={self.gbest_swallow.fitness:.3f}\n'
             f'\tgbest_position={self.gbest_swallow.position}'
         )
-

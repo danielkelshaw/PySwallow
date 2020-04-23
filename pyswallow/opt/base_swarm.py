@@ -5,6 +5,30 @@ class BaseSwarm(ABC):
 
     def __init__(self, n_swallows, bounds, w, c1, c2):
 
+        """
+        Initialiser for BaseSwarm class.
+
+        Parameters
+        ----------
+        n_swallows : int
+            Number of swallows for use in the population.
+        bounds : dict
+            Bounds to impose on the search space.
+        w : float
+            Inertia weight.
+        c1 : float
+            Cognitive weight.
+        c2 : float
+            Social weight.
+
+        Attributes
+        ----------
+        pnames : list
+            The parameter names given in the bounds dict.
+        population : list
+            Contains all population members for the swarm.
+        """
+
         self.n_swallows = n_swallows
 
         if not isinstance(bounds, dict):
