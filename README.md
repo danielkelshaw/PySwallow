@@ -11,7 +11,7 @@ features an extensible framework which allows researchers to provide
 custom implementations which interface with existing functionality.
 
 - **License:** MIT
-- **Python Versions:** 3.6+
+- **Python Versions:** 3.7+
 
 ## **Features:**
 - [x] High-level module for Particle Swarm Optimisation.

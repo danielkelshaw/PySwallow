@@ -1,13 +1,43 @@
+import multiprocessing as mp
+from typing import Callable
+
 from ..opt.sopso import Swarm
 from ..swallows.so_swallow import Swallow
-
-from typing import Any, Callable
-import multiprocessing as mp
 
 
 class MPSwarm(Swarm):
 
-    def __init__(self, bounds, n_swallows, n_iterations, cores, w=0.7, c1=2.0, c2=2.0, debug=False) -> None:
+    def __init__(self,
+                 bounds: dict,
+                 n_swallows: int,
+                 n_iterations: int,
+                 cores: int,
+                 w: float = 0.7,
+                 c1: float = 2.0,
+                 c2: float = 2.0,
+                 debug: bool = False) -> None:
+
+        """Multiprocessing Swarm.
+
+        Parameters
+        ----------
+        bounds : dict
+            Provides the upper and lower bounds of the search space.
+        n_swallows : int
+            Population size.
+        n_iterations : int
+            Number of iterations to run optimisation for.
+        cores : int
+            Number of cores to use for multiprocessing.
+        w : float
+            Inertia weight.
+        c1 : float
+            Cognitive weight.
+        c2 : float
+            Social weight.
+        debug : bool
+            True if you want to log debugging, False otherwise.
+        """
 
         super().__init__(bounds, n_swallows, n_iterations, w, c1, c2, debug)
 
@@ -15,6 +45,14 @@ class MPSwarm(Swarm):
         self.pool = mp.Pool(processes=self.cores)
 
     def step_optimise(self, fn: Callable[[Swallow], Swallow]) -> None:
+
+        """Runs one iteration of the optimisation process.
+
+        Parameters
+        ----------
+        fn : Callable[[Swallow], Swallow]
+            Function to optimise for.
+        """
 
         self.w = self.iwh(self.iteration)
 

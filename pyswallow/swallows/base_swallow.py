@@ -1,36 +1,21 @@
 from abc import ABC, abstractmethod
+from typing import NoReturn
 
 import numpy as np
+
+from ..handlers.base_handler import BaseHandler
 
 
 class BaseSwallow(ABC):
 
-    def __init__(self, bounds):
+    def __init__(self, bounds: dict) -> None:
 
-        """
-        Initialiser for BaseSwallow class.
+        """BaseSwallow Class.
 
         Parameters
         ----------
         bounds : dict
             Bounds to impose on the search space.
-
-        Attributes
-        ----------
-        lb : np.ndarray
-            Lower bound of search space.
-        ub : np.ndarray
-            Upper bound of search space.
-        position : np.ndarray
-            Current position of the swallow.
-        velocity : np.ndarray
-            Current velocity of the swallow.
-        fitness : float or list
-            Current fitness of the swallow.
-        pbest_position : np.ndarray
-            The position of the swallow at the best fitness evaluation.
-        pbest_fitness : float or list
-            The current best fitness evaluation.
         """
 
         if not isinstance(bounds, dict):
@@ -50,5 +35,5 @@ class BaseSwallow(ABC):
         self.pbest_fitness = float('inf')
 
     @abstractmethod
-    def move(self, bh):
+    def move(self, bh: BaseHandler) -> NoReturn:
         raise NotImplementedError('BaseSwallow::move()')

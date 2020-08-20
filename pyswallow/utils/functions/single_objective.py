@@ -1,10 +1,9 @@
 import numpy as np
 
 
-def ackley(position):
+def ackley(position: np.ndarray) -> float:
 
-    """
-    Implementation of the Ackley Function.
+    """Implementation of the Ackley Function.
 
     Bounds  = [-32.0, 32.0] for N dimensions.
     Optimum = 0.0 at position = [0.0, ..., 0.0]
@@ -34,10 +33,9 @@ def ackley(position):
     return val
 
 
-def beale(position):
+def beale(position: np.ndarray) -> float:
 
-    """
-    Implementation of the Beale Function.
+    """Implementation of the Beale Function.
 
     Bounds  = [-4.5, 4.5] in 2D.
     Optimum = 0.0 at position = [3.0, 0.5]
@@ -67,10 +65,9 @@ def beale(position):
     return val
 
 
-def booth(position):
+def booth(position: np.ndarray) -> float:
 
-    """
-    Implementation of the Booth Function.
+    """Implementation of the Booth Function.
 
     Bounds  = [-10.0, 10.0] in 2D.
     Optimum = 0.0 at position = [1.0, 3.0]
@@ -98,10 +95,9 @@ def booth(position):
     return val
 
 
-def goldsteinprice(position):
+def goldsteinprice(position: np.ndarray) -> float:
 
-    """
-    Implementation of the Goldenstein-Price Function.
+    """Implementation of the Goldenstein-Price Function.
 
     Bounds  = [-2.0, 2.0] in 2D.
     Optimum = 3.0 at position = [0.0, -1.0]
@@ -148,10 +144,9 @@ def goldsteinprice(position):
     return val
 
 
-def rastrigin(position):
+def rastrigin(position: np.ndarray) -> float:
 
-    """
-    Implementation of the Rastrigin Function.
+    """Implementation of the Rastrigin Function.
 
     Bounds  = [-5.12, 5.12] in N dimensions.
     Optimum = 0.0 at position = [0.0, ..., 0.0]
@@ -178,10 +173,9 @@ def rastrigin(position):
     return val
 
 
-def sphere(position):
+def sphere(position: np.ndarray) -> float:
 
-    """
-    Implementation of the Sphere Function.
+    """Implementation of the Sphere Function.
 
     Bounds  = [-inf, inf] in N dimensions.
     Optimum = 0.0 at position = [0.0, ..., 0.0]

@@ -1,20 +1,18 @@
 import abc
 import time
 
+from ..opt.base_swarm import BaseSwarm
+from ..opt.sopso import Swarm
+
+from typing import NoReturn
+
 
 class BaseTerminationManager(abc.ABC):
 
     @abc.abstractmethod
-    def termination_check(self):
+    def termination_check(self) -> NoReturn:
 
-        """
-        Checks if optimisation process is complete.
-
-        Returns
-        -------
-        bool
-            True if complete, False if incomplete.
-        """
+        """Checks if optimisation process is complete."""
 
         raise NotImplementedError(
             'BaseTerminationManager::termination_check()'
@@ -25,10 +23,9 @@ class IterationTerminationManager(BaseTerminationManager):
 
     """Terminates optimisation process after n_iterations."""
 
-    def __init__(self, swarm):
+    def __init__(self, swarm: BaseSwarm) -> None:
 
-        """
-        Initialises IterationTerminationManager.
+        """Iteration Termination Manager Class.
 
         Parameters
         ----------
@@ -38,7 +35,8 @@ class IterationTerminationManager(BaseTerminationManager):
 
         self.swarm = swarm
 
-    def termination_check(self):
+    def termination_check(self) -> bool:
+
         if self.swarm.iteration > self.swarm.n_iterations:
             return True
         else:
@@ -49,26 +47,21 @@ class TimeTerminationManager(BaseTerminationManager):
 
     """Terminates optimisation process after N seconds."""
 
-    def __init__(self, t_budget):
+    def __init__(self, t_budget: int) -> None:
 
-        """
-        Initialises TimeTerminationManager.
+        """Time Termination Manager Class.
 
         Parameters
         ----------
         t_budget : int
             Number of seconds to terminate after.
-
-        Attributes
-        ----------
-        t_start : float
-            Time that the optimisation procedure started.
         """
 
         self.t_budget = t_budget
         self.t_start = None
 
-    def termination_check(self):
+    def termination_check(self) -> bool:
+
         if self.t_start is None:
             self.t_start = time.time()
 
@@ -84,10 +77,9 @@ class EvaluationTerminationManager(BaseTerminationManager):
 
     """Terminates optimisation process after N function evaluations."""
 
-    def __init__(self, swarm, n_evaluations):
+    def __init__(self, swarm: BaseSwarm, n_evaluations: int) -> None:
 
-        """
-        Initialises EvaluationTerminationManager.
+        """Evaluation Termination Manager Class.
 
         Parameters
         ----------
@@ -100,7 +92,8 @@ class EvaluationTerminationManager(BaseTerminationManager):
         self.swarm = swarm
         self.n_iterations = n_evaluations // swarm.n_swallows
 
-    def termination_check(self):
+    def termination_check(self) -> bool:
+
         if self.swarm.iteration > self.n_iterations:
             return True
         else:
@@ -111,14 +104,13 @@ class ErrorTerminationManager(BaseTerminationManager):
 
     """Terminates optimisation process if target is reached."""
 
-    def __init__(self, swarm, target, threshold):
+    def __init__(self, swarm: Swarm, target: float, threshold: float) -> None:
 
-        """
-        Initialises ErrorTerminationManager.
+        """Error Termination Manager Class.
 
         Parameters
         ----------
-        swarm : BaseSwarm
+        swarm : Swarm
             Swarm to manage.
         target : float
             Optimisation target to reach before termination.
@@ -130,19 +122,18 @@ class ErrorTerminationManager(BaseTerminationManager):
         self.target = target
         self.threshold = threshold
 
-    def termination_check(self):
+    def termination_check(self) -> bool:
 
-        if self.swarm.best_individual is None:
+        if self.swarm.gbest_swallow is None:
             return False
-        elif self._in_threshold(self.swarm.best_individual.fitness):
+        elif self._in_threshold(self.swarm.gbest_swallow.fitness):
             return True
         else:
             return False
 
-    def _in_threshold(self, val):
+    def _in_threshold(self, val: float) -> bool:
 
-        """
-        Helper method to determine if the value has reached the target.
+        """Helper method to determine if the value has reached the target.
 
         Parameters
         ----------

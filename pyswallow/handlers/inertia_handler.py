@@ -1,9 +1,8 @@
 class StandardIWH:
 
-    def __init__(self, w):
+    def __init__(self, w: float) -> None:
 
-        """
-        Initialiser for StandardIWH class.
+        """Standard Inertia Weight Handler.
 
         Parameters
         ----------
@@ -13,10 +12,9 @@ class StandardIWH:
 
         self.w = w
 
-    def __call__(self, iteration):
+    def __call__(self, iteration: int) -> float:
 
-        """
-        Returns the inertia weight unchanged.
+        """Returns the inertia weight unchanged.
 
         Parameters
         ----------
@@ -34,10 +32,9 @@ class StandardIWH:
 
 class LinearIWH:
 
-    def __init__(self, w_init, w_end, n_iterations):
+    def __init__(self, w_init: float, w_end: float, n_iterations: int) -> None:
 
-        """
-        Initialiser for LinearIWH class.
+        """Linear Inertia Weight Handler.
 
         Parameters
         ----------
@@ -54,10 +51,9 @@ class LinearIWH:
         self.w_diff = self.w_init - self.w_end
         self.n_iterations = n_iterations
 
-    def __call__(self, iteration):
+    def __call__(self, iteration: int) -> float:
 
-        """
-        Calculated linearly interpolated intertia weight.
+        """Calculated linearly interpolated intertia weight.
 
         Parameters
         ----------

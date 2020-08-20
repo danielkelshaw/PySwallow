@@ -2,31 +2,27 @@ import copy
 
 import numpy as np
 
+from ..swallows.base_swallow import BaseSwallow
+
 
 class Archive:
 
-    def __init__(self, n_objectives):
+    def __init__(self, n_objectives: int) -> None:
 
-        """
-        Initialiser for the Archive class.
+        """Archive Class.
 
         Parameters
         ----------
         n_objectives : int
             Number of objectives being optimised for.
-
-        Attributes
-        population : list
-            Holds the members of the archive.
         """
 
         self.population = []
         self.n_objectives = n_objectives
 
-    def add_swallow(self, swallow):
+    def add_swallow(self, swallow: BaseSwallow) -> None:
 
-        """
-        Responsible for adding a swallow to the archive.
+        """Responsible for adding a swallow to the archive.
 
         Parameters
         ----------
@@ -36,7 +32,7 @@ class Archive:
 
         self.population.append(swallow)
 
-    def pareto_front(self):
+    def pareto_front(self) -> None:
 
         """Calculates the Pareto front of the archive."""
 
@@ -55,7 +51,7 @@ class Archive:
 
         self.population = pf
 
-    def assign_sparsity(self):
+    def assign_sparsity(self) -> None:
 
         """Assigns a sparsity to each member of the archive."""
 
@@ -77,10 +73,9 @@ class Archive:
 
         self.population = _population
 
-    def sparsity_limit(self, n_limit):
+    def sparsity_limit(self, n_limit: int) -> None:
 
-        """
-        Caps the archive size, keeping the sparsest N swallows.
+        """Caps the archive size, keeping the sparsest N swallows.
 
         Parameters
         ----------
@@ -93,10 +88,9 @@ class Archive:
                                      key=lambda x: x.sparsity,
                                      reverse=True)[:n_limit]
 
-    def choose_leader(self, method=0):
+    def choose_leader(self, method: int = 0) -> BaseSwallow:
 
-        """
-        Chooses a leader for use in velocity calculations.
+        """Chooses a leader for use in velocity calculations.
 
         Parameters
         ----------

@@ -1,5 +1,6 @@
 import copy
 import logging
+from typing import Callable
 
 import numpy as np
 
@@ -16,11 +17,16 @@ from ..utils.termination_manager import IterationTerminationManager
 
 class Swarm(BaseSwarm):
 
-    def __init__(self, bounds, n_swallows, n_iterations,
-                 w=0.7, c1=2.0, c2=2.0, debug=False):
+    def __init__(self,
+                 bounds: dict,
+                 n_swallows: int,
+                 n_iterations: int,
+                 w: float = 0.7,
+                 c1: float = 2.0,
+                 c2: float = 2.0,
+                 debug: bool = False) -> None:
 
-        """
-        Initialiser for the Swarm class.
+        """Swarm Class.
 
         Parameters
         ----------
@@ -38,27 +44,6 @@ class Swarm(BaseSwarm):
             Social weight.
         debug : bool
             True if you want to log debugging, False otherwise.
-
-        Attributes
-        ---------
-        rep : Reporter
-            Provides ability to log / debug the optimisation.å
-        gbest_swallow : Swallow
-            Swallow with the current best fitness.
-        iteration : int
-            Current iteration of the optimisation procedure.
-        bh : BaseHandler
-            Manipulates position dependant on boundary interactions.
-        vh : BaseHandler
-            Manipulates the velocity dependant on boundary interactions.
-        iwh : InertiaWeightHandler
-            Manipulates the inertia weight.
-        history : MOHistory
-            Records the optimisation history.
-        constraint_manager : ConstraintManager
-            Determines if imposed constraints have been violated.
-        termination_manager : BaseTerminationManager
-            Determines whether termination criteria have been fulfilled.
         """
 
         super().__init__(bounds, n_swallows, w, c1, c2)
@@ -87,7 +72,7 @@ class Swarm(BaseSwarm):
             f'bounds={bounds}'
             f')', lvl=logging.DEBUG)
 
-    def reset_environment(self):
+    def reset_environment(self) -> None:
 
         """Responsible for resetting the optimisation environment."""
 
@@ -96,7 +81,7 @@ class Swarm(BaseSwarm):
         self.population = []
         self.rep.log('Swarm::reset_environment()', lvl=logging.DEBUG)
 
-    def initialise_swarm(self):
+    def initialise_swarm(self) -> None:
 
         """Initialises the population with Swallow objects."""
 
@@ -104,25 +89,23 @@ class Swarm(BaseSwarm):
         self.rep.log('Swarm::initialise_swarm()', lvl=logging.DEBUG)
 
     @staticmethod
-    def evaluate_fitness(swallow, fn):
+    def evaluate_fitness(swallow: Swallow, fn: Callable[[np.ndarray], np.ndarray]) -> None:
 
-        """
-        Assesses the fitness of the swallow.
+        """Assesses the fitness of the swallow.
 
         Parameters
         ----------
         swallow : MOSwallow
             Swallow for which to assess the fitness.
-        fn : function
+        fn : Callable[[np.ndarray], np.ndarray]
             Function to use in order to assess the fitness.
         """
 
         swallow.fitness = fn(swallow.position)
 
-    def update_velocity(self, swallow):
+    def update_velocity(self, swallow: Swallow) -> None:
 
-        """
-        Updates the velocity of a given swallow.
+        """Updates the velocity of a given swallow.
 
         Parameters
         ----------
@@ -130,14 +113,14 @@ class Swarm(BaseSwarm):
             Swallow for which to update the velocity.
         """
 
-        def inertial():
+        def inertial() -> np.ndarray:
             return self.w * swallow.velocity
 
-        def cognitive():
+        def cognitive() -> np.ndarray:
             return (self.c1 * np.random.uniform()
                     * (swallow.pbest_position - swallow.position))
 
-        def social():
+        def social() -> np.ndarray:
             return (self.c2 * np.random.uniform()
                     * (self.gbest_swallow.position - swallow.position))
 
@@ -151,10 +134,9 @@ class Swarm(BaseSwarm):
         )
 
     @staticmethod
-    def pbest_update(swallow):
+    def pbest_update(swallow: Swallow) -> None:
 
-        """
-        Updates the pbest values of the swallow.
+        """Updates the pbest values of the swallow.
 
         Parameters
         ----------
@@ -166,10 +148,9 @@ class Swarm(BaseSwarm):
             swallow.pbest_fitness = swallow.fitness
             swallow.pbest_position = swallow.position
 
-    def gbest_update(self, swallow):
+    def gbest_update(self, swallow: Swallow) -> None:
 
-        """
-        Updates the gbest value of the swarm.
+        """Updates the gbest value of the swarm.
 
         Parameters
         ----------
@@ -187,14 +168,13 @@ class Swarm(BaseSwarm):
             lvl=logging.DEBUG
         )
 
-    def step_optimise(self, fn):
+    def step_optimise(self, fn: Callable[[np.ndarray], np.ndarray]) -> None:
 
-        """
-        Runs one iteration of the optimisation process.
+        """Runs one iteration of the optimisation process.
 
         Parameters
         ----------
-        fn : function
+        fn : Callable[[np.ndarray], np.ndarray]
             Funnction to optimise for.
         """
 
@@ -221,14 +201,13 @@ class Swarm(BaseSwarm):
             f'gbest_position={self.gbest_swallow.position}'
         )
 
-    def optimise(self, fn):
+    def optimise(self, fn: Callable[[np.ndarray], np.ndarray]) -> None:
 
-        """
-        Runs the entire optimisation process.
+        """Runs the entire optimisation process.
 
         Parameters
         ----------
-        fn : function
+        fn : Callable[[np.ndarray], np.ndarray]
             Function to optimise for.
         """
 

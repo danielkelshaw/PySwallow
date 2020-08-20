@@ -1,12 +1,13 @@
 from .base_constraints import BaseConstraint, PositionConstraint
+from ..opt.base_swarm import BaseSwarm
+from ..swallows.base_swallow import BaseSwallow
 
 
 class ConstraintManager:
 
-    def __init__(self, swarm):
+    def __init__(self, swarm: BaseSwarm) -> None:
 
-        """
-        Initialiser for ConstraintManager.
+        """Constraint Manager Class.
 
         Parameters
         ----------
@@ -17,10 +18,9 @@ class ConstraintManager:
         self.swarm = swarm
         self.constraints = []
 
-    def violates_position(self, swallow):
+    def violates_position(self, swallow: BaseSwallow) -> bool:
 
-        """
-        Checks if position constraints have been violated.
+        """Checks if position constraints have been violated.
 
         Parameters
         ----------
@@ -45,10 +45,9 @@ class ConstraintManager:
 
         return False
 
-    def register_constraint(self, constraint):
+    def register_constraint(self, constraint: BaseConstraint) -> None:
 
-        """
-        Adds a constraint to be tested.
+        """Adds a constraint to be tested.
 
         Parameters
         ----------
