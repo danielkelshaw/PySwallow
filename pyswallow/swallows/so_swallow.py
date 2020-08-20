@@ -1,12 +1,12 @@
 from .base_swallow import BaseSwallow
+from ..handlers.boundary_handler import BaseBoundaryHandler
 
 
 class Swallow(BaseSwallow):
 
-    def __init__(self, bounds):
+    def __init__(self, bounds: dict) -> None:
 
-        """
-        Initialiser for the Swallow class.
+        """Swallow Class.
 
         Parameters
         ----------
@@ -16,10 +16,9 @@ class Swallow(BaseSwallow):
 
         super().__init__(bounds)
 
-    def move(self, bh):
+    def move(self, bh: BaseBoundaryHandler) -> None:
 
-        """
-        Responsible for moving the swallow in the search space.
+        """Responsible for moving the swallow in the search space.
 
         Parameters
         ----------

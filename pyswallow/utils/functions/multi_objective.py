@@ -1,8 +1,12 @@
+from typing import Callable, List, Tuple
+
 import numpy as np
 
 
-def binh_korn():
-    def func_one(position):
+def binh_korn() -> Tuple[List[Callable[[np.ndarray], np.ndarray]], Callable[[np.ndarray], bool]]:
+
+    def func_one(position: np.ndarray) -> np.ndarray:
+
         if not position.shape[0] == 2:
             raise IndexError('Binh & Korn only takes two-dimensional inputs.')
         if not np.logical_and(position[0] >= 0, position[0] <= 5):
@@ -19,7 +23,8 @@ def binh_korn():
 
         return 4 * np.square(x) + 4 * np.square(y)
 
-    def func_two(position):
+    def func_two(position: np.ndarray) -> np.ndarray:
+
         if not position.shape[0] == 2:
             raise IndexError('Binh & Korn only takes two-dimensional inputs.')
         if not np.logical_and(position[0] >= 0, position[0] <= 5):
@@ -36,7 +41,7 @@ def binh_korn():
 
         return np.square(x - 5) + np.square(y - 5)
 
-    def constraints(position):
+    def constraints(position: np.ndarray) -> bool:
 
         x = position[0]
         y = position[1]
@@ -56,14 +61,17 @@ def binh_korn():
     return [func_one, func_two], constraints
 
 
-def schaffer_n1():
-    def func_one(position):
+def schaffer_n1() -> List[Callable[[np.ndarray], np.ndarray]]:
+
+    def func_one(position: np.ndarray) -> np.ndarray:
+
         if not position.shape[0] == 1:
             raise IndexError('Schaffer N1 only takes one-dimensional input.')
 
         return np.square(position[0])
 
-    def func_two(position):
+    def func_two(position: np.ndarray) -> np.ndarray:
+
         if not position.shape[0] == 1:
             raise IndexError('Schaffer N1 only takes one-dimensional input.')
 

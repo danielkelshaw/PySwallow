@@ -1,23 +1,18 @@
 import abc
+from typing import NoReturn
 
 
 class BaseConstraint(abc.ABC):
 
     @abc.abstractmethod
-    def constrain(self, *args):
+    def constrain(self, *args: dict) -> NoReturn:
 
-        """
-        Determines whether the associated arg violates constraints.
+        """Determines whether the associated arg violates constraints.
 
         Parameters
         ----------
         args : dict
             Arguments to determine if constraints are violated.
-
-        Returns
-        -------
-        bool
-            True if within constraints, False otherwise.
 
         Raises
         ------
@@ -31,20 +26,14 @@ class BaseConstraint(abc.ABC):
 class PositionConstraint(BaseConstraint):
 
     @abc.abstractmethod
-    def constrain(self, position):
+    def constrain(self, position: dict) -> NoReturn:
 
-        """
-        Determines whether the associated position violates constraints.
+        """Determines whether the associated position violates constraints.
 
         Parameters
         ----------
         position : dict
             Current position of the Swallow in dictionary form.
-
-        Returns
-        -------
-        bool
-            True if within constraints, False otherwise.
 
         Raises
         ------

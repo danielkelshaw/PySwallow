@@ -1,13 +1,14 @@
 import logging
+from typing import Callable, List
 
 import numpy as np
 
-from pyswallow.opt.base_swarm import BaseSwarm
 from ..constraints.constraint_manager import ConstraintManager
 from ..handlers.archive import Archive
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.inertia_handler import StandardIWH
 from ..handlers.velocity_handler import StandardVH
+from ..opt.base_swarm import BaseSwarm
 from ..swallows.mo_swallow import MOSwallow
 from ..utils.history import MOHistory
 from ..utils.reporter import Reporter
@@ -16,11 +17,16 @@ from ..utils.termination_manager import IterationTerminationManager
 
 class MOSwarm(BaseSwarm):
 
-    def __init__(self, bounds, n_swallows, n_iterations,
-                 w=0.7, c1=2.0, c2=2.0, debug=False):
+    def __init__(self,
+                 bounds: dict,
+                 n_swallows: int,
+                 n_iterations: int,
+                 w: float = 0.7,
+                 c1: float = 2.0,
+                 c2: float = 2.0,
+                 debug: bool = False) -> None:
 
-        """
-        Initialiser for the MOSwarm class.
+        """MOSwarm Class.
 
         Parameters
         ----------
@@ -38,29 +44,6 @@ class MOSwarm(BaseSwarm):
             Social weight.
         debug : bool
             True if you want to log debugging, False otherwise.
-
-        Attributes
-        ----------
-        rep : Reporter
-            Provides ability to log / debug the optimisation.
-        n_objs : int
-            Number of objectives.
-        archive : Archive
-            Class to deal with Pareto dominance.
-        iteration : int
-            Current iteration of the optimisation procedure.
-        bh : BaseHandler
-            Manipulates position dependant on boundary interactions.
-        vh : BaseHandler
-            Manipulates the velocity dependant on boundary interactions.
-        iwh : InertiaWeightHandler
-            Manipulates the inertia weight.
-        history : MOHistory
-            Records the optimisation history.
-        constraint_manager : ConstraintManager
-            Determines if imposed constraints have been violated.
-        termination_manager : BaseTerminationManager
-            Determines whether termination criteria have been fulfilled.
         """
 
         super().__init__(bounds, n_swallows, w, c1, c2)
@@ -91,7 +74,7 @@ class MOSwarm(BaseSwarm):
             f')', lvl=logging.DEBUG
         )
 
-    def reset_environment(self):
+    def reset_environment(self) -> None:
 
         """Responsible for resetting the optimisation environment."""
 
@@ -100,7 +83,7 @@ class MOSwarm(BaseSwarm):
         self.archive = Archive(self.n_objs)
         self.rep.log('MOSwarm::reset_environment()', lvl=logging.DEBUG)
 
-    def initialise_swarm(self):
+    def initialise_swarm(self) -> None:
 
         """Initialises the population with MOSwallow objects."""
 
@@ -108,7 +91,7 @@ class MOSwarm(BaseSwarm):
                            for _ in range(self.n_swallows)]
         self.rep.log('MOSwarm::initialise_swarm()', lvl=logging.DEBUG)
 
-    def initialise_archive(self):
+    def initialise_archive(self) -> None:
 
         """Instantiates an Archive instance."""
 
@@ -116,26 +99,24 @@ class MOSwarm(BaseSwarm):
         self.rep.log('MOSwarm::initialise_archive()', lvl=logging.DEBUG)
 
     @staticmethod
-    def evaluate_fitness(swallow, fns):
+    def evaluate_fitness(swallow: MOSwallow, fns: List[Callable[[np.ndarray], np.ndarray]]) -> None:
 
-        """
-        Assesses the fitness of the swallow.
+        """Assesses the fitness of the swallow.
 
         Parameters
         ----------
         swallow : MOSwallow
             Swallow for which to assess the fitness.
-        fns : list
+        fns : List[Callable[[Any], Any]]
             Functions to use in order to assess the fitness.
         """
 
         for idx, function in enumerate(fns):
             swallow.fitness[idx] = function(swallow.position)
 
-    def update_velocity(self, swallow):
+    def update_velocity(self, swallow: MOSwallow) -> None:
 
-        """
-        Updates the velocity of a given swallow.
+        """Updates the velocity of a given swallow.
 
         Parameters
         ----------
@@ -166,10 +147,9 @@ class MOSwarm(BaseSwarm):
         )
 
     @staticmethod
-    def update_pbest(swallow):
+    def update_pbest(swallow: MOSwallow) -> None:
 
-        """
-        Updates the pbest values of the swallow.
+        """Updates the pbest values of the swallow.
 
         Parameters
         ----------
@@ -181,14 +161,13 @@ class MOSwarm(BaseSwarm):
             swallow.pbest_position = swallow.position
             swallow.pbest_fitness = swallow.fitness
 
-    def step_optimise(self, fns):
+    def step_optimise(self, fns: List[Callable[[np.ndarray], np.ndarray]]) -> None:
 
-        """
-        Runs one iteration of the optimisation process.
+        """Runs one iteration of the optimisation process.
 
         Parameters
         ----------
-        fns : list
+        fns : List[Callable[[np.ndarray], np.ndarray]]
             List of functions to optimise for.
         """
 
@@ -219,14 +198,13 @@ class MOSwarm(BaseSwarm):
             f'archive_length={len(self.archive.population):03}'
         )
 
-    def optimise(self, fns):
+    def optimise(self, fns: List[Callable[[np.ndarray], np.ndarray]]) -> None:
 
-        """
-        Runs the entire optimisation process.
+        """Runs the entire optimisation process.
 
         Parameters
         ----------
-        fns : list
+        fns : List[Callable[[np.ndarray], np.ndarray]]
             List of functions to optimise for.
         """
 

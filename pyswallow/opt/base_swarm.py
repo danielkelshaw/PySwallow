@@ -1,12 +1,19 @@
 from abc import ABC, abstractmethod
+from typing import Any, Callable, NoReturn
+
+from ..swallows.base_swallow import BaseSwallow
 
 
 class BaseSwarm(ABC):
 
-    def __init__(self, bounds, n_swallows, w, c1, c2):
+    def __init__(self,
+                 bounds: dict,
+                 n_swallows: int,
+                 w: float,
+                 c1: float,
+                 c2: float) -> None:
 
-        """
-        Initialiser for BaseSwarm class.
+        """BaseSwarm Class.
 
         Parameters
         ----------
@@ -20,13 +27,6 @@ class BaseSwarm(ABC):
             Cognitive weight.
         c2 : float
             Social weight.
-
-        Attributes
-        ----------
-        pnames : list
-            The parameter names given in the bounds dict.
-        population : list
-            Contains all population members for the swarm.
         """
 
         self.n_swallows = n_swallows
@@ -41,29 +41,32 @@ class BaseSwarm(ABC):
         self.c1 = c1
         self.c2 = c2
 
+        self.iteration = None
+        self.n_iterations = None
+
         self.population = []
 
     @abstractmethod
-    def reset_environment(self):
+    def reset_environment(self) -> NoReturn:
         raise NotImplementedError('BaseSwarm::reset_environment()')
 
     @abstractmethod
-    def initialise_swarm(self):
+    def initialise_swarm(self) -> NoReturn:
         raise NotImplementedError('BaseSwarm::initialise_swarm()')
 
     @abstractmethod
-    def update_velocity(self, swallow):
+    def update_velocity(self, swallow: BaseSwallow) -> NoReturn:
         raise NotImplementedError('BaseSwarm::update_velocity()')
 
     @staticmethod
     @abstractmethod
-    def evaluate_fitness(*args):
+    def evaluate_fitness(*args: Any) -> NoReturn:
         raise NotImplementedError('BaseSwarm::evaluate_fitness()')
 
     @abstractmethod
-    def step_optimise(self, fn):
+    def step_optimise(self, fn: Callable[[Any], Any]) -> NoReturn:
         raise NotImplementedError('BaseSwarm::step_optimise()')
 
     @abstractmethod
-    def optimise(self, fn):
+    def optimise(self, fn: Callable[[Any], Any]) -> NoReturn:
         raise NotImplementedError('BaseSwarm::optimise()')

@@ -1,8 +1,7 @@
 import pytest
 
-from pyswallow import Swarm
-from pyswallow.constraints.base_constraints \
-    import PositionConstraint
+from pyswallow.opt.sopso import Swarm
+from pyswallow.constraints.base_constraints import PositionConstraint
 from pyswallow.constraints.constraint_manager import ConstraintManager
 
 

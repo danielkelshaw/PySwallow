@@ -1,9 +1,8 @@
 class PlotDesigner:
 
-    def __init__(self):
+    def __init__(self) -> None:
 
-        """
-        Initialises the PlotDesigner Class.
+        """Initialises the PlotDesigner Class.
 
         Attributes
         ----------

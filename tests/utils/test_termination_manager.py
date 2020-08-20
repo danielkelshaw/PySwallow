@@ -1,7 +1,14 @@
+import time
+
 import pytest
 
 import pyswallow as ps
-from pyswallow.utils.termination_manager import *
+from pyswallow.utils.termination_manager import (
+    IterationTerminationManager,
+    TimeTerminationManager,
+    EvaluationTerminationManager,
+    ErrorTerminationManager
+)
 
 
 @pytest.fixture
@@ -56,7 +63,7 @@ class TestErrorTerminationManager:
 
         best = ps.Swallow(bounds)
         best.fitness = 0.0001
-        optimiser.best_individual = best
+        optimiser.gbest_swallow = best
 
         tm = ErrorTerminationManager(optimiser, 0.0, 1e-3)
         ret_bool = tm.termination_check()

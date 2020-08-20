@@ -2,13 +2,16 @@ import logging
 import logging.config
 import os
 
+from typing import Union
+
 
 class Reporter:
 
-    def __init__(self, logger=None, lvl=logging.INFO):
+    def __init__(self,
+                 logger: Union[logging.Logger, None] = None,
+                 lvl: int = logging.INFO) -> None:
 
-        """
-        Initialiser for Reporter class.
+        """Reporter Class.
 
         Parameters
         ----------
@@ -24,10 +27,11 @@ class Reporter:
 
         self._setup_logger()
 
-    def log(self, msg, lvl=logging.INFO):
+    def log(self,
+            msg: str,
+            lvl: int = logging.INFO) -> None:
 
-        """
-        Logs a message with a given level.
+        """Logs a message with a given level.
 
         Parameters
         ----------
@@ -39,7 +43,7 @@ class Reporter:
 
         self.logger.log(lvl, msg)
 
-    def _setup_logger(self):
+    def _setup_logger(self) -> None:
 
         """Initialises the logger using the basic config."""
 

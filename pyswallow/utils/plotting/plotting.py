@@ -1,3 +1,5 @@
+from typing import Union
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -6,10 +8,12 @@ from ..history import SOHistory
 from ...handlers.archive import Archive
 
 
-def plot_fitness_history(history, title, designer=None, save=None):
+def plot_fitness_history(history: SOHistory,
+                         title: str,
+                         designer: Union[PlotDesigner, None] = None,
+                         save: Union[bool, None] = None) -> None:
 
-    """
-    Generates a plot of the optimisations fitness / iterations.
+    """Generates a plot of the optimisations fitness / iterations.
 
     Parameters
     ----------
@@ -51,10 +55,12 @@ def plot_fitness_history(history, title, designer=None, save=None):
         plt.show()
 
 
-def plot_archive(archive, title, designer=None, save=None):
+def plot_archive(archive: Archive,
+                 title: str,
+                 designer: Union[PlotDesigner, None] = None,
+                 save: Union[bool, None] = None) -> None:
 
-    """
-    Generates a plot of the Pareto front.
+    """Generates a plot of the Pareto front.
 
     Parameters
     ----------

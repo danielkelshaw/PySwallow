@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 from .base_swallow import BaseSwallow
+from ..handlers.boundary_handler import BaseBoundaryHandler
 
 
 class MOSwallow(BaseSwallow):
 
-    def __init__(self, bounds, n_obj):
+    def __init__(self, bounds: dict, n_obj: int) -> None:
 
-        """
-        Initialiser for the MOSwallow class.
+        """MOSwallow Class.
 
         Parameters
         ----------
@@ -14,15 +16,6 @@ class MOSwallow(BaseSwallow):
             Provides the upper and lower bounds of the search space.
         n_obj : int
             Number of objectives.
-
-        Attributes
-        ----------
-        fitness : list
-            Current fitness for each objective.
-        pbest_fitness : list
-            Current best fitness for the swallow.
-        sparsity : float
-            Measure of the sparsity accoring to fitness.
         """
 
         super().__init__(bounds)
@@ -32,10 +25,9 @@ class MOSwallow(BaseSwallow):
         self.pbest_fitness = [float('inf')] * n_obj
         self.sparsity = 0
 
-    def move(self, bh):
+    def move(self, bh: BaseBoundaryHandler) -> None:
 
-        """
-        Responsible for moving the swallow in the search space.
+        """Responsible for moving the swallow in the search space.
 
         Parameters
         ----------
@@ -46,10 +38,9 @@ class MOSwallow(BaseSwallow):
         self.position += self.velocity
         self.position = bh(self.position)
 
-    def dominate(self, opponent):
+    def dominate(self, opponent: MOSwallow) -> bool:
 
-        """
-        Returns the dominant swallow.
+        """Returns the dominant swallow.
 
         Parameters
         ----------
@@ -72,10 +63,9 @@ class MOSwallow(BaseSwallow):
 
         return self_dominates
 
-    def self_dominate(self):
+    def self_dominate(self) -> bool:
 
-        """
-        Determines if new fitness dominates pbest_fitness.
+        """Determines if new fitness dominates pbest_fitness.
 
         Returns
         -------

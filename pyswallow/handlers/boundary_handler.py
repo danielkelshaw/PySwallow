@@ -3,15 +3,23 @@ import numpy as np
 from .base_handler import BaseHandler
 
 
-class StandardBH(BaseHandler):
+class BaseBoundaryHandler(BaseHandler):
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
-    def __call__(self, position):
+    def __call__(self, *args: np.ndarray) -> np.ndarray:
+        raise NotImplementedError('BaseBoundaryHandler::__call__()')
 
-        """
-        Returns the position unchanged.
+
+class StandardBH(BaseBoundaryHandler):
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def __call__(self, position: np.ndarray) -> np.ndarray:
+
+        """Returns the position unchanged.
 
         Parameters
         ----------
@@ -27,17 +35,27 @@ class StandardBH(BaseHandler):
         return position
 
 
-class NearestBH(BaseHandler):
+class NearestBH(BaseBoundaryHandler):
 
-    def __init__(self, lb, ub):
+    def __init__(self, lb: np.ndarray, ub: np.ndarray) -> None:
+
+        """Nearest Boundary Handler.
+
+        Parameters
+        ----------
+        lb : np.ndarray
+            Lower bound.
+        ub : np.ndarray
+            Upper bound.
+        """
+
         super().__init__()
         self.lb = lb
         self.ub = ub
 
-    def __call__(self, position):
+    def __call__(self, position: np.ndarray) -> np.ndarray:
 
-        """
-        Clips the position according to the imposed bounds.
+        """Clips the position according to the imposed bounds.
 
         Parameters
         ----------
@@ -53,12 +71,11 @@ class NearestBH(BaseHandler):
         return np.clip(position, self.lb, self.ub)
 
 
-class ReflectiveBH(BaseHandler):
+class ReflectiveBH(BaseBoundaryHandler):
 
-    def __init__(self, lb, ub):
+    def __init__(self, lb: np.ndarray, ub: np.ndarray) -> None:
 
-        """
-        Initialiser for the ReflectiveBH class.
+        """Reflective Boundary Handler.
 
         Parameters
         ----------
@@ -72,10 +89,9 @@ class ReflectiveBH(BaseHandler):
         self.lb = lb
         self.ub = ub
 
-    def __call__(self, position):
+    def __call__(self, position: np.ndarray) -> np.ndarray:
 
-        """
-        Reflects position back within the imposed bounds.
+        """Reflects position back within the imposed bounds.
 
         Parameters
         ----------
@@ -103,12 +119,11 @@ class ReflectiveBH(BaseHandler):
         return position
 
 
-class RandomBH(BaseHandler):
+class RandomBH(BaseBoundaryHandler):
 
-    def __init__(self, lb, ub):
+    def __init__(self, lb: np.ndarray, ub: np.ndarray) -> None:
 
-        """
-        Initialiser for the RandomBH class.
+        """Random Boundary Handler.
 
         Parameters
         ----------
@@ -122,10 +137,9 @@ class RandomBH(BaseHandler):
         self.lb = lb
         self.ub = ub
 
-    def __call__(self, position):
+    def __call__(self, position: np.ndarray) -> np.ndarray:
 
-        """
-        Returns random position within range for exceeded boundaries.
+        """Returns random position within range for exceeded boundaries.
 
         Parameters
         ----------

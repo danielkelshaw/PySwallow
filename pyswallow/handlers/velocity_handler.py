@@ -5,13 +5,15 @@ from .base_handler import BaseHandler
 
 class StandardVH(BaseHandler):
 
-    def __init__(self):
+    def __init__(self) -> None:
+
+        """Standard Velocity Handler."""
+
         super().__init__()
 
-    def __call__(self, velocity):
+    def __call__(self, velocity: np.ndarray) -> np.ndarray:
 
-        """
-        Returns the velocity completely unaltered.
+        """Returns the velocity completely unaltered.
 
         Parameters
         ----------
@@ -29,10 +31,9 @@ class StandardVH(BaseHandler):
 
 class ClampedVH(BaseHandler):
 
-    def __init__(self, lb, ub):
+    def __init__(self, lb: np.ndarray, ub: np.ndarray) -> None:
 
-        """
-        Initialiser for ClampedVH class.
+        """Clamped Velocity Handler.
 
         Parameters
         ----------
@@ -46,10 +47,9 @@ class ClampedVH(BaseHandler):
         self.lb = lb
         self.ub = ub
 
-    def __call__(self, velocity):
+    def __call__(self, velocity: np.ndarray) -> np.ndarray:
 
-        """
-        Clips the velocity according to the imposed bounds.
+        """Clips the velocity according to the imposed bounds.
 
         Parameters
         ----------
@@ -67,10 +67,9 @@ class ClampedVH(BaseHandler):
 
 class InvertVH(BaseHandler):
 
-    def __init__(self, lb, ub):
+    def __init__(self, lb: np.ndarray, ub: np.ndarray) -> None:
 
-        """
-        Initialiser for InvertVH class.
+        """Invert Velocity Handler.
 
         Parameters
         ----------
@@ -85,10 +84,9 @@ class InvertVH(BaseHandler):
         self.lb = lb
         self.ub = ub
 
-    def __call__(self, velocity, z=0.5):
+    def __call__(self, velocity: np.ndarray, z: float = 0.5) -> np.ndarray:
 
-        """
-        Inverts velocity according to scaling factor, z, and bounds.
+        """Inverts velocity according to scaling factor, z, and bounds.
 
         Parameters
         ----------
@@ -113,10 +111,9 @@ class InvertVH(BaseHandler):
 
 class ZeroVH(BaseHandler):
 
-    def __init__(self, lb, ub):
+    def __init__(self, lb: np.ndarray, ub: np.ndarray) -> None:
 
-        """
-        Initialier for ZeroVH class.
+        """Zero Velocity Handler.
 
         Parameters
         ----------
@@ -130,14 +127,14 @@ class ZeroVH(BaseHandler):
         self.lb = lb
         self.ub = ub
 
-    def __call__(self, velocity):
+    def __call__(self, velocity: np.ndarray) -> np.ndarray:
 
-        """
-        Zeros the velocty for any dimension exceeding the bounds.
+        """Zeros the velocty for any dimension exceeding the bounds.
 
         Parameters
         ----------
         velocity : np.ndarray
+            Velocity to zero.
 
         Returns
         -------
