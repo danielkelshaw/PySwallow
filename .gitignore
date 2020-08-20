@@ -4,6 +4,8 @@
 *.egg-info/
 build/
 dist/
+venv*/
 *.pyc
+*.ipynb
 *.log
 tmp_*
