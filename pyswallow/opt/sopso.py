@@ -4,7 +4,7 @@ from typing import Callable
 
 import numpy as np
 
-from pyswallow.opt.base_swarm import BaseSwarm
+from ..opt.base_swarm import BaseSwarm
 from ..constraints.constraint_manager import ConstraintManager
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.inertia_handler import StandardIWH

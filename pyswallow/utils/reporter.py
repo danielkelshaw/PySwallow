@@ -2,6 +2,8 @@ import logging
 import logging.config
 import os
 
+from typing import Union
+
 
 class Reporter:
 

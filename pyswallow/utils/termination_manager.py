@@ -1,10 +1,8 @@
 import abc
 import time
+from typing import NoReturn
 
 from ..opt.base_swarm import BaseSwarm
-from ..opt.sopso import Swarm
-
-from typing import NoReturn
 
 
 class BaseTerminationManager(abc.ABC):
@@ -14,9 +12,7 @@ class BaseTerminationManager(abc.ABC):
 
         """Checks if optimisation process is complete."""
 
-        raise NotImplementedError(
-            'BaseTerminationManager::termination_check()'
-        )
+        raise NotImplementedError('BaseTerminationManager::termination_check()')
 
 
 class IterationTerminationManager(BaseTerminationManager):
@@ -104,13 +100,13 @@ class ErrorTerminationManager(BaseTerminationManager):
 
     """Terminates optimisation process if target is reached."""
 
-    def __init__(self, swarm: Swarm, target: float, threshold: float) -> None:
+    def __init__(self, swarm: BaseSwarm, target: float, threshold: float) -> None:
 
         """Error Termination Manager Class.
 
         Parameters
         ----------
-        swarm : Swarm
+        swarm : BaseSwarm
             Swarm to manage.
         target : float
             Optimisation target to reach before termination.

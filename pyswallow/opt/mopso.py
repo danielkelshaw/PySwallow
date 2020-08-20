@@ -3,12 +3,12 @@ from typing import Callable, List
 
 import numpy as np
 
-from pyswallow.opt.base_swarm import BaseSwarm
 from ..constraints.constraint_manager import ConstraintManager
 from ..handlers.archive import Archive
 from ..handlers.boundary_handler import StandardBH
 from ..handlers.inertia_handler import StandardIWH
 from ..handlers.velocity_handler import StandardVH
+from ..opt.base_swarm import BaseSwarm
 from ..swallows.mo_swallow import MOSwallow
 from ..utils.history import MOHistory
 from ..utils.reporter import Reporter

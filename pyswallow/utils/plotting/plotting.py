@@ -1,11 +1,11 @@
+from typing import Union
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 from .plot_designer import PlotDesigner
 from ..history import SOHistory
 from ...handlers.archive import Archive
-
-from typing import Union
 
 
 def plot_fitness_history(history: SOHistory,

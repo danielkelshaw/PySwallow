@@ -4,8 +4,6 @@ from typing import NoReturn
 import numpy as np
 
 from ..opt.base_swarm import BaseSwarm
-from ..opt.mopso import MOSwarm
-from ..opt.sopso import Swarm
 
 
 class BaseHistory(abc.ABC):
@@ -32,7 +30,7 @@ class BaseHistory(abc.ABC):
 
 class SOHistory(BaseHistory):
 
-    def __init__(self, swarm: Swarm) -> None:
+    def __init__(self, swarm: BaseSwarm) -> None:
         super().__init__(swarm)
 
         self.arr_best_fitness = []
@@ -48,7 +46,7 @@ class SOHistory(BaseHistory):
 
 class MOHistory(BaseHistory):
 
-    def __init__(self, swarm: MOSwarm) -> None:
+    def __init__(self, swarm: BaseSwarm) -> None:
         super().__init__(swarm)
 
         self.arr_mean_fitness = []

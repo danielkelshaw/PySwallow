@@ -3,7 +3,7 @@ from typing import Callable, List, Tuple
 import numpy as np
 
 
-def binh_korn() -> Tuple[List[Callable[[np.ndarray], np.ndarray], Callable[[np.ndarray], np.ndarray]], Callable[[np.ndarray], bool]]:
+def binh_korn() -> Tuple[List[Callable[[np.ndarray], np.ndarray]], Callable[[np.ndarray], bool]]:
 
     def func_one(position: np.ndarray) -> np.ndarray:
 
@@ -61,7 +61,7 @@ def binh_korn() -> Tuple[List[Callable[[np.ndarray], np.ndarray], Callable[[np.n
     return [func_one, func_two], constraints
 
 
-def schaffer_n1() -> List[Callable[[np.ndarray], np.ndarray], Callable[[np.ndarray], np.ndarray]]:
+def schaffer_n1() -> List[Callable[[np.ndarray], np.ndarray]]:
 
     def func_one(position: np.ndarray) -> np.ndarray:
 
