@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='PySwallow',
-    version='1.0.0',
+    version='1.1.0',
     description='A Python Particle Swarm Optimisation Library.',
     long_description=readme,
     long_description_content_type='text/markdown',
