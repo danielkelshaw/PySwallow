@@ -34,6 +34,9 @@ class BaseSwallow(ABC):
         self.pbest_position = self.position
         self.pbest_fitness = float('inf')
 
+        self.swallow_id = None
+        self.swallow_iteration = None
+
     @abstractmethod
     def move(self, bh: BaseHandler) -> NoReturn:
         raise NotImplementedError('BaseSwallow::move()')
