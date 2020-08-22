@@ -87,8 +87,13 @@ class MOSwarm(BaseSwarm):
 
         """Initialises the population with MOSwallow objects."""
 
-        self.population = [MOSwallow(self.bounds, self.n_objs)
-                           for _ in range(self.n_swallows)]
+        self.population = []
+
+        for i in range(self.n_swallows):
+            _swallow = MOSwallow(self.bounds, self.n_objs)
+            _swallow.swallow_id = i
+            self.population.append(_swallow)
+
         self.rep.log('MOSwarm::initialise_swarm()', lvl=logging.DEBUG)
 
     def initialise_archive(self) -> None:
@@ -172,6 +177,9 @@ class MOSwarm(BaseSwarm):
         """
 
         self.w = self.iwh(self.iteration)
+
+        for swallow in self.population:
+            swallow.swallow_iteration = self.iteration
 
         for swallow in self.population:
             self.evaluate_fitness(swallow, fns)

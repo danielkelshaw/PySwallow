@@ -56,6 +56,9 @@ class MPSwarm(Swarm):
 
         self.w = self.iwh(self.iteration)
 
+        for swallow in self.population:
+            swallow.swallow_iteration = self.iteration
+
         self.population = self.pool.map(fn, self.population)
 
         for swallow in self.population:

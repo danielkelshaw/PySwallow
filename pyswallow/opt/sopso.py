@@ -85,7 +85,13 @@ class Swarm(BaseSwarm):
 
         """Initialises the population with Swallow objects."""
 
-        self.population = [Swallow(self.bounds) for _ in range(self.n_swallows)]
+        self.population = []
+
+        for i in range(self.n_swallows):
+            _swallow = Swallow(self.bounds)
+            _swallow.swallow_id = i
+            self.population.append(_swallow)
+
         self.rep.log('Swarm::initialise_swarm()', lvl=logging.DEBUG)
 
     @staticmethod
@@ -179,6 +185,9 @@ class Swarm(BaseSwarm):
         """
 
         self.w = self.iwh(self.iteration)
+
+        for swallow in self.population:
+            swallow.swallow_iteration = self.iteration
 
         for swallow in self.population:
             self.evaluate_fitness(swallow, fn)
