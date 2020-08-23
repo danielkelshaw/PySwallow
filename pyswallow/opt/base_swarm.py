@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Callable, NoReturn
 
+import numpy as np
+
 from ..swallows.base_swallow import BaseSwallow
 
 
@@ -35,6 +37,10 @@ class BaseSwarm(ABC):
             raise TypeError('bounds must be dict.')
 
         self.bounds = bounds
+        _bounds = np.asarray(list(bounds.values()))
+        self.lb = _bounds[:, 0]
+        self.ub = _bounds[:, 1]
+
         self.pnames = list(bounds.keys())
 
         self.w = w
