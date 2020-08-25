@@ -225,11 +225,10 @@ class Swarm(BaseSwarm):
 
         while not self.termination_manager.termination_check():
             self.step_optimise(fn)
+
+            if self.checkpointer(self.iteration):
+                self.save_swarm()
+
             self.iteration += 1
 
         self.rep.log('Optimisation complete...')
-
-        self.rep.log(
-            f'\tgbest_fitness={self.gbest_swallow.fitness:.3f}\n'
-            f'\tgbest_position={self.gbest_swallow.position}'
-        )
