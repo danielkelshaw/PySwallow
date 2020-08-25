@@ -224,12 +224,10 @@ class MOSwarm(BaseSwarm):
 
         while not self.termiation_manager.termination_check():
             self.step_optimise(fns)
+
+            if self.checkpointer(self.iteration):
+                self.save_swarm()
+
             self.iteration += 1
 
         self.rep.log('Optimisation complete...')
-        for idx, swallow in enumerate(self.archive.population):
-            self.rep.log(
-                f'archive_swallow={idx:03}\t'
-                f'fitness={swallow.fitness}\t'
-                f'position={swallow.position}'
-            )

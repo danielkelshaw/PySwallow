@@ -1,9 +1,11 @@
+import pickle
 from abc import ABC, abstractmethod
-from typing import Any, Callable, NoReturn
+from typing import Any, Callable, NoReturn, Optional
 
 import numpy as np
 
 from ..swallows.base_swallow import BaseSwallow
+from ..utils.checkpoint import Checkpointer
 
 
 class BaseSwarm(ABC):
@@ -50,6 +52,8 @@ class BaseSwarm(ABC):
         self.iteration = None
         self.n_iterations = None
 
+        self.checkpointer = Checkpointer()
+
         self.population = []
 
     @abstractmethod
@@ -76,3 +80,19 @@ class BaseSwarm(ABC):
     @abstractmethod
     def optimise(self, fn: Callable[[Any], Any]) -> NoReturn:
         raise NotImplementedError('BaseSwarm::optimise()')
+
+    def save_swarm(self, save_path: Optional[str] = None) -> None:
+
+        """Serializes Swarm.
+
+        Parameters
+        ----------
+        save_path : str
+            Path to save swarm object to.
+        """
+
+        if save_path is None:
+            save_path = f'it{self.iteration:03}.swarm'
+
+        with open(save_path, 'wb+') as fpickle:
+            pickle.dump(self, fpickle)

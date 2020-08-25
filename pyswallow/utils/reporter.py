@@ -47,11 +47,10 @@ class Reporter:
 
         """Initialises the logger using the basic config."""
 
-        logging.basicConfig(level=self.log_level,
-                            format='%(asctime)s '
-                                   '%(name)-12s '
-                                   '%(levelname)-8s '
-                                   '%(message)s',
-                            datefmt='%m-%d %H:%M',
-                            filename=self.log_path,
-                            filemode='w')
+        logging.basicConfig(
+            level=self.log_level,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            datefmt='%d/%m/%Y %H:%M:%S',
+            filename=self.log_path,
+            filemode='w'
+        )

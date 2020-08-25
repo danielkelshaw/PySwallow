@@ -73,3 +73,26 @@ class MPSwarm(Swarm):
             swallow.move(self.bh)
 
         self.history.write_history()
+
+    def optimise(self, fn: Callable[[Swallow], Swallow]) -> None:
+
+        """Runs the entire optimisation process.
+
+        Parameters
+        ----------
+        fn : Callable[[Swallow], Swallow]
+            Function to optimise for.
+        """
+
+        self.reset_environment()
+        self.initialise_swarm()
+
+        while not self.termination_manager.termination_check():
+            self.step_optimise(fn)
+
+            if self.checkpointer(self.iteration):
+                self.save_swarm()
+
+            self.iteration += 1
+
+        self.rep.log('Optimisation complete...')
