@@ -96,3 +96,10 @@ class MPSwarm(Swarm):
             self.iteration += 1
 
         self.rep.log('Optimisation complete...')
+
+    def __getstate__(self) -> dict:
+        return {k: self.__dict__[k] for k in self.__dict__.keys() - {'pool'}}
+
+    def __setstate__(self, state: dict) -> None:
+        self.__dict__.update(state)
+        self.pool = mp.Pool(processes=self.cores)
