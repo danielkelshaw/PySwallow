@@ -1,6 +1,8 @@
 import multiprocessing as mp
 from typing import Callable
 
+import numpy as np
+
 from ..opt.sopso import Swarm
 from ..swallows.so_swallow import Swallow
 
@@ -73,6 +75,14 @@ class MPSwarm(Swarm):
             swallow.move(self.bh)
 
         self.history.write_history()
+
+        mean_fitness = np.mean([s.fitness for s in self.population])
+        self.rep.log(
+            f'iteration={self.iteration:05}\t'
+            f'mean_fitness={mean_fitness:.3f}\t'
+            f'gbest_fitness={self.gbest_swallow.fitness:.3f}\t'
+            f'gbest_position={self.gbest_swallow.position}'
+        )
 
     def optimise(self, fn: Callable[[Swallow], Swallow]) -> None:
 
