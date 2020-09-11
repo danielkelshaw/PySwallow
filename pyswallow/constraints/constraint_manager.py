@@ -1,4 +1,4 @@
-from .base_constraints import BaseConstraint, PositionConstraint
+from .base_constraints import BaseConstraint, PositionConstraint, FitnessConstraint
 from ..opt.base_swarm import BaseSwarm
 from ..swallows.base_swallow import BaseSwallow
 
@@ -33,12 +33,35 @@ class ConstraintManager:
             True if position constraints are violated, False otherwise.
         """
 
-        position = dict(zip(self.swarm.pnames, swallow.position))
-
         within_constraints = True
         for constraint in self.constraints:
             if isinstance(constraint, PositionConstraint):
-                within_constraints = constraint.constrain(position)
+                within_constraints = constraint.constrain(swallow)
+
+            if not within_constraints:
+                return True
+
+        return False
+
+    def violates_fitness(self, swallow: BaseSwallow) -> bool:
+
+        """Checks if fitness constraints have been violated.
+
+        Parameters
+        ----------
+        swallow : BaseSwallow
+            The swallow for which to check the constraints.
+
+        Returns
+        -------
+        bool
+            True if fitness constraints are violated, False otherwise.
+        """
+
+        within_constraints = True
+        for constraint in self.constraints:
+            if isinstance(constraint, FitnessConstraint):
+                within_constraints = constraint.constrain(swallow)
 
             if not within_constraints:
                 return True

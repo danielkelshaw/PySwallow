@@ -184,12 +184,23 @@ class MOSwarm(BaseSwarm):
         for swallow in self.population:
             self.evaluate_fitness(swallow, fns)
 
-            if not self.constraint_manager.violates_position(swallow):
-                self.update_pbest(swallow)
+            if self.constraint_manager.violates_position(swallow):
+                continue
+
+            if self.constraint_manager.violates_fitness(swallow):
+                continue
+
+            self.update_pbest(swallow)
 
         for swallow in self.population:
-            if not self.constraint_manager.violates_position(swallow):
-                self.archive.add_swallow(swallow)
+
+            if self.constraint_manager.violates_position(swallow):
+                continue
+
+            if self.constraint_manager.violates_fitness(swallow):
+                continue
+
+            self.archive.add_swallow(swallow)
 
         self.archive.pareto_front()
         self.archive.assign_sparsity()

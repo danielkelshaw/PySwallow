@@ -68,8 +68,8 @@ from pyswallow.constraints.base_constraints import PositionConstraint
 
 class UserConstraint(PositionConstraint):
 
-    def constrain(self, position):
-        return position['x0'] > 0 and position['x1'] < 0
+    def constrain(self, swallow):
+        return swallow['x0'] > 0 and swallow['x1'] < 0
 
 
 optimiser.constraint_manager.register_constraint(UserConstraint())

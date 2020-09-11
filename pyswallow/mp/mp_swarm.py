@@ -64,13 +64,18 @@ class MPSwarm(Swarm):
         self.population = self.pool.map(fn, self.population)
 
         for swallow in self.population:
+            self.evaluate_fitness(swallow, fn)
 
-            if not self.constraints_manager.violates_position(swallow):
-                self.gbest_update(swallow)
-                self.pbest_update(swallow)
+            if self.constraints_manager.violates_position(swallow):
+                continue
+
+            if self.constraints_manager.violates_fitness(swallow):
+                continue
+
+            self.gbest_update(swallow)
+            self.pbest_update(swallow)
 
         for swallow in self.population:
-
             self.update_velocity(swallow)
             swallow.move(self.bh)
 
