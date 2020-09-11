@@ -1,17 +1,19 @@
 import abc
-from typing import NoReturn
+from typing import Any, NoReturn
+
+from ..swallows.base_swallow import BaseSwallow
 
 
 class BaseConstraint(abc.ABC):
 
     @abc.abstractmethod
-    def constrain(self, *args: dict) -> NoReturn:
+    def constrain(self, *args: Any) -> NoReturn:
 
         """Determines whether the associated arg violates constraints.
 
         Parameters
         ----------
-        args : dict
+        args : Any
             Arguments to determine if constraints are violated.
 
         Raises
@@ -26,14 +28,14 @@ class BaseConstraint(abc.ABC):
 class PositionConstraint(BaseConstraint):
 
     @abc.abstractmethod
-    def constrain(self, position: dict) -> NoReturn:
+    def constrain(self, swallow: BaseSwallow) -> NoReturn:
 
         """Determines whether the associated position violates constraints.
 
         Parameters
         ----------
-        position : dict
-            Current position of the Swallow in dictionary form.
+        swallow : BaseSwallow
+            Swallow to check constraints for.
 
         Raises
         ------
@@ -41,4 +43,25 @@ class PositionConstraint(BaseConstraint):
             Raises when this function has not yet been implemented.
         """
 
-        raise NotImplementedError('PositionConstraint::constrained()')
+        raise NotImplementedError('PositionConstraint::constrain()')
+
+
+class FitnessConstraint(BaseConstraint):
+
+    @abc.abstractmethod
+    def constrain(self, swallow: BaseSwallow) -> NoReturn:
+
+        """Determines whether thw associated fitness violates constraints.
+
+        Parameters
+        ----------
+        swallow : BaseSwallow
+            Swallow to check constraints for.
+
+        Raises
+        ------
+        NotImplementedError
+            Raises when this function has not yet been implemented.
+        """
+
+        raise NotImplementedError('FitnessConstraint::constrain()')
