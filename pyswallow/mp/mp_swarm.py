@@ -64,7 +64,6 @@ class MPSwarm(Swarm):
         self.population = self.pool.map(fn, self.population)
 
         for swallow in self.population:
-            self.evaluate_fitness(swallow, fn)
 
             if self.constraints_manager.violates_position(swallow):
                 continue
