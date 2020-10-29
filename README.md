@@ -44,6 +44,37 @@ optimiser = ps.Swarm(bounds=bounds, n_swallows=30, n_iterations=100)
 optimiser.optimise(fx.sphere)
 ```
 
+## **MPSwarm Example:**
+PySwallow can also be used in a `multiprocessing` case - using different
+CPUs for each function evaluation. An example can be seen below:
+
+```python
+import numpy as np
+import pyswallow as ps
+from pyswallow.mp.mp_swarm import MPSwarm
+from pyswallow.swallows.so_swallow import Swallow
+
+
+bounds = {
+    'x0': [-1e6, 1e6],
+    'x1': [-1e6, 1e6],
+    'x2': [-1e6, 1e6]
+}
+
+def mp_sphere(swallow: Swallow) -> Swallow:
+	swallow.fitness = np.sum(np.square(swallow.position))
+	return swallow
+
+optimiser = MPSwarm(
+	bounds=bounds, 
+	n_swallows=30, 
+	n_iterations=100,
+	cores=4
+)
+
+optimiser.optimise(mp_sphere)
+```
+
 ## **History:**
 The optimisation history is written to a ```History``` data structure
 to allow the user to further investigate the optimisation procedure 
