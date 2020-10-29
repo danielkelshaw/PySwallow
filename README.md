@@ -62,14 +62,14 @@ bounds = {
 }
 
 def mp_sphere(swallow: Swallow) -> Swallow:
-	swallow.fitness = np.sum(np.square(swallow.position))
-	return swallow
+    swallow.fitness = np.sum(np.square(swallow.position))
+    return swallow
 
 optimiser = MPSwarm(
-	bounds=bounds, 
-	n_swallows=30, 
-	n_iterations=100,
-	cores=4
+    bounds=bounds, 
+    n_swallows=30, 
+    n_iterations=100,
+    cores=4
 )
 
 optimiser.optimise(mp_sphere)
